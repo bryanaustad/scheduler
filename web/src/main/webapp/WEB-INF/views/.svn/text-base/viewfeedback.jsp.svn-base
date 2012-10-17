@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<%@include file="/WEB-INF/views/includes/init.jsp" %>
+<html lang="en">
+	<head>
+		<title>View Feedback</title>
+		<jsp:include page="/WEB-INF/views/includes/brains.jsp"/>
+		<link rel="stylesheet" type="text/css" media="print" href="${pageContext['request'].contextPath}/styles/print.css" />
+		<link rel="shortcut icon" type="image/ico" href="/favicon.ico" />
+		<script type="text/javascript" charset="utf-8">
+			$(function() {
+				$.ajaxSetup({
+					// Disable caching of AJAX responses */
+					cache: false
+				});
+				//Retrieve courses with feedback and their feedback sources
+				$.getJSON("${pageContext['request'].contextPath}/course/feedbackinfo.json", null, function(data){fillDropDowns(data);});
+				
+				//Hide divs for both kinds of feedback at first
+				$('#conf_feedback').hide();
+				$('#course_feedback').hide();
+				
+				//Deactivate the drop-down menu opposite the "point of reference" and activate
+				//the other drop-down
+				$("input[name=por]").click(function(){
+					if($(this).val() == "coursePor") {
+						$.getJSON("${pageContext['request'].contextPath}/course/feedbackinfo.json", null, function(data){
+							$("#course").empty();
+							$("#source").empty();
+							fillDropDowns(data);
+							getFeedback();
+						});
+						$("#source").attr("disabled", "disabled");
+						$("#course").removeAttr("disabled");
+					} else {
+						$.getJSON("${pageContext['request'].contextPath}/course/feedbackinfo.json", null, function(data){
+							$("#course").empty();
+							$("#source").empty();
+							fillDropDowns(data);
+							getFeedback();
+						});
+						$("#course").attr("disabled", "disabled");
+						$("#source").removeAttr("disabled");
+					}
+				});
+			
+				$("#course").change(function() {
+					$("#source").removeAttr("disabled");
+					//Update source list and display selected feedback
+					$.getJSON("${pageContext['request'].contextPath}/course/feedbackinfo.json", {course_id:$(this).children(":selected").val()}, function(data){
+						//If the course is selected as the point of reference, update the list of sources
+						if ($("input[name=por]:checked").val() == "coursePor") {
+							$("#source").empty();
+							fillDropDowns(data);
+						}
+						getFeedback();
+					});
+				});
+				
+				$("#source").change(function() {
+					$("#course").removeAttr("disabled");
+					//Update course list and display selected feedback
+					$.getJSON("${pageContext['request'].contextPath}/course/feedbackinfo.json", {sourceId:$(this).children(":selected").val()}, function(data){
+						//If the source is selected as the point of reference, update the list of courses
+						if ($("input[name=por]:checked").val() == "sourcePor") {
+							$("#course").empty();
+							fillDropDowns(data);
+						}
+						getFeedback();
+					});
+				});
+			});
+			
+			//Retrieve feedback from the database
+			function getFeedback() {
+				var sourceIdToSend = $("#source").children(":selected").val();
+				var courseIdToSend = $("#course").children(":selected").val();
+				//Conference feedback
+				if (courseIdToSend == "conf") {
+					$.getJSON("${pageContext['request'].contextPath}/course/getfeedback/conf.json", {sourceId:sourceIdToSend}, function(data) {
+						if (data.sourceId!=undefined) {
+							$('#conf_feedback').show();
+							$('#course_feedback').hide();
+							$("#background").val(data.background);
+							$("#job").val(data.job);
+							$("#distance").val(data.distance);
+							$("#location").val(data.location);
+							$("#food").val(data.food);
+							$("#presentationcontent").val(data.presentationcontent);
+							$("#presentationquality").val(data.presentationquality);
+							$("#presentationlength").val(data.presentationlength);
+							$("#conferencelength").val(data.conferencelength);
+							$("#schedule").val(data.schedule);
+							$("#keynote0").val(data.keynote0);
+							$("#keynote1").val(data.keynote1);
+							$("#keynote2").val(data.keynote2);
+							$("#applicable").val(data.applicable);
+							$("#overall").val(data.overall);
+							$("#service").val(data.service);
+							$("#bestexp").val(data.bestexp);
+							$("#improve").val(data.improve);
+						} else {
+							$("input").val("");
+						}
+					});
+				//Course feedback
+				} else {
+					$.getJSON("${pageContext['request'].contextPath}/course/getfeedback/course.json", {sourceId:sourceIdToSend, courseId:courseIdToSend}, function(data) {
+						if(data.sourceId!=undefined) {
+							$('#course_feedback').show();
+							$('#conf_feedback').hide();
+							$("#content-quality").val(data.contentRating);
+							$("#presenter-quality").val(data.presenterRating);
+							$("#like").val(data.like);
+							$("#suggest").val(data.suggest);
+						} else {
+							$("input").val("");
+						}	
+					});
+				}
+			}
+
+			//Fill the drop down menus with values taken from passed-in data
+			function fillDropDowns(data) {
+				if (document.getElementById("course").length == 0) {
+					for (var i in data.courses)
+					{
+						if (!data.courses[i]=='') {
+							var courseOption = document.createElement("OPTION");
+							courseOption.text = data.courses[i];
+							courseOption.value = i;
+							document.getElementById("course").options.add(courseOption);
+						}
+					}
+				}
+				if (document.getElementById("source").length == 0) {
+					for (var i in data.sources)
+					{
+						if (!data.sources[i]=='') {
+							var sourceOption = document.createElement("OPTION");
+							sourceOption.text = data.sources[i];
+							sourceOption.value = i;
+							document.getElementById("source").options.add(sourceOption);
+						}
+					}
+				}
+				//Sort lists alphanumerically
+			}
+		</script>
+		<style>
+			#my-box{
+				width:800px;
+				overflow: auto;
+			}
+			#my-box input {
+				width: auto;
+			}
+			dl{
+				display: inline-block;
+				width: 100%;
+				padding-left: 0px;
+				margin-left: 0px;
+			}
+			dt{
+				width: 170px;
+				text-align: left;
+				font-weight: normal;
+				padding-left: 5px;
+				white-space: nowrap;
+			}
+			dd{
+				width : 55%;
+			}
+			.buttontd{
+				text-align: right;
+			}
+		</style>
+	</head>
+	<body class="signin" >
+		<jsp:include page="/WEB-INF/views/includes/header.jsp"/>
+		<h2 class="pageheading">View Feedback</h2>
+		<div id="my-box" class="ixf-form form-v1">
+			<dl>
+				<dt><label for="por">Point of Reference:</label></dt>
+				<dd>
+					<input type="radio" name="por" style= "width: 50px" value="coursePor">Conference/Course</input>
+					<input type="radio" name="por" style= "width: 50px" value="sourcePor">Feedback Source</input>
+				</dd>
+			</dl>
+			<dl>
+				<dt><label for="course">Conference/Course:</label></dt>
+				<dd><select name="course" id="course" disabled="disabled">
+				</select></dd>
+			</dl>
+			<dl>
+				<dt><label for="source">Feedback Source:</label></dt>
+				<dd><select name="source" id="source" disabled="disabled">
+				</select></dd>
+			</dl>
+			<div id="conf_feedback">
+				<dl>
+					<dt><label for="background">Background:</label></dt>
+					<dd>
+						<input type="text" name="background" id="background" />
+						<input type="text" name="job" id="job" />
+					</dd>
+				</dl>
+				<dl>
+					<dt><label for="distance">Approximate distance traveled to attend the conference (in miles):</label></dt>
+					<dd><input type="text" name="distance" id="distance" readonly="readonly"/></dd>
+				</dl>
+				<dl>
+					<dt><label for="location">Conference Location:</label></dt>
+					<dd><input type="text" name="location" id="location" readonly="readonly"/></dd>
+				</dl>
+				<dl>
+					<dt><label for="food">Food:</label></dt>
+					<dd><input type="text" name="food" id="food" readonly="readonly"/></dd>
+				</dl>
+				<dl>
+					<dt><label for="presentationcontent">Content of Presentations:</label></dt>
+					<dd><input type="text" name="presentationcontent" id="presentationcontent" readonly="readonly"/></dd>
+				</dl>
+				<dl>
+					<dt><label for="presentationquality">Quality of Presentations:</label></dt>
+					<dd><input type="text" name="presentationquality" id="presentationcontent" readonly="readonly"/></dd>
+				</dl>
+				<dl>
+					<dt><label for="presentationlength">Length of Presentations:</label></dt>
+					<dd><input type="text" name="presentationlength" id="presentationlength" readonly="readonly"/></dd>
+				</dl>
+				<dl>
+					<dt><label for="conferencelength">Length of Conference: (2 days plus a keynote)</label></dt>
+					<dd><input type="text" name="conferencelength" id="conferencelength" readonly="readonly"/></dd>
+				</dl>
+				<dl>
+					<dt><label for="schedule">Daily schedule (start, end, breaks, etc.)</label></dt>
+					<dd><input type="text" name="schedule" id="schedule" readonly="readonly"/></dd>
+				</dl>
+				<dl>
+					<dt><label for="keynote0">Keynote speaker (Clark Gilbert - Wednesday evening)</label></dt>
+					<dd><input type="text" name="keynote0" id="keynote0" readonly="readonly"/></dd>
+				</dl>
+				<dl>
+					<dt><label for="keynote1">Keynote speaker (Blaine Maxfield - Thursday morning)</label></dt>
+					<dd><input type="text" name="keynote1" id="keynote1" readonly="readonly"/></dd>
+				</dl>
+				<dl>
+					<dt><label for="keynote2">Keynote speakers (Michael Carter, John Edwards - Friday morning)</label></dt>
+					<dd><input type="text" name="keynote2" id="keynote2" readonly="readonly"/></dd>
+				</dl>
+				<dl>
+					<dt><label for="applicable">How applicable the conference content was to what you were looking for:</label></dt>
+					<dd><input type="text" name="applicable" id="applicable" readonly="readonly"/></dd>
+				</dl>
+				<dl>
+					<dt><label for="overall">How this Conference compares to other similar conferences you have attended:</label></dt>
+					<dd><input type="text" name="overall" id="overall" readonly="readonly"/></dd>
+				</dl>
+				<dl>
+					<dt><label for="service">Do you feel you were able to contribute service effectively?</label></dt>
+					<dd><input type="text" name="service" id="service" readonly="readonly"/></dd>
+				</dl>
+				<dl>
+					<dt><label for="bestexp">What was your <strong>best experience</strong> at this conference?</label></dt>
+					<dd>
+						<textarea id="bestexp" name="bestexp" cols="30" rows="10" readonly="readonly"></textarea>
+					</dd>
+				</dl>
+				<dl>
+					<dt><label for="improve">What could be <strong>improved</strong> for the next conference?</label></dt>
+					<dd>
+						<textarea id="improve" name="improve" cols="30" rows="10" readonly="readonly"></textarea>
+					</dd>
+				</dl>
+			</div>
+			<div id="course_feedback">
+				<dl>
+					<dt><label for="content-quality">How you rated the quality of the <strong>content</strong> presented:</label></dt>
+					<dd><input type="text" name="content-quality" id="content-quality" readonly="readonly"/></dd>
+				</dl>
+				<dl>
+					<dt><label for="presenter-quality">How you rated the presenter's ability to <strong>effectively present</strong> the information:</label></dt>
+					<dd><input type="text" name="presenter-quality" id="presenter-quality" readonly="readonly"/></dd>
+				</dl>
+				<dl>
+					<dt><label for="like">What did you <strong>most appreciate</strong> about this presentation?</label></dt>
+					<dd>
+						<textarea id="like" name="like" cols="30" rows="10" readonly="readonly"></textarea>
+					</dd>
+				</dl>
+				<dl>
+					<dt><label for="suggest">If you had just <strong>one suggestion for this presenter</strong>, it would be:</label></dt>
+					<dd>
+						<textarea id="suggest" name="suggest" cols="30" rows="10" readonly="readonly"></textarea>
+					</dd>
+				</dl>
+			</div>
+		</div>
+		<div class="church-logo">The Church of Jesus Christ of Latter-day Saints</div>
+	</body>
+</html>

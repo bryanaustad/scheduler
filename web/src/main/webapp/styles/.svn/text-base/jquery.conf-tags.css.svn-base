@@ -1,0 +1,56 @@
+#filters {
+	overflow: visible;
+	padding-left: 23px;
+	width: 120px; height: 773px;
+}
+.conf-tags-track-hdr, .conf-tags-tag-hdr, .conf-tags-presenter-hdr, .conf-tags-hour-hdr {
+	color: #666;
+	cursor: pointer;
+	font: bold 11px/12px arial;
+	height: 19px;
+	padding-top: 5px;
+	padding-bottom: 2px;
+	vertical-align: baseline;
+	width: 100%;
+}
+.conf-tags-track-hdr:hover, .conf-tags-tag-hdr:hover, .conf-tags-presenter-hdr:hover, .conf-tags-hour-hdr:hover {
+	color: #333;
+	text-decoration: underline;
+}
+
+#conf-tags-tracks div, #conf-tags-tags div, #conf-tags-presenters div, #conf-tags-hours div {
+	color: #666;
+	cursor: pointer;
+	font: 10px/10px arial;
+	height: 17px;
+	width: 200px;
+}
+#conf-tags-track div:hover, #conf-tags-tags div:hover, #conf-tags-presenters div:hover, #conf-tags-hours div:hover {
+	color: #333;
+	text-decoration: underline;
+}
+#conf-tags-track div span, #conf-tags-tags div span, #conf-tags-presenters div span, #conf-tags-hours div span {
+	color: #999;
+}
+
+#conf-tags-hours p.conf-tags-hour-day-wrapper {
+    float: left;
+    width: 35px;
+    padding: 0px;
+    margin: 0px;
+}
+
+#conf-tags-tags div.BlingBling {
+    color: #D22;
+    font-size: 12px;
+}
+
+#conf-tags-track div.BlingBling {
+    color: #D22;
+    font-size: 12px;
+}
+
+#conf-tags-presenters div.BlingBling {
+    color: #D22;
+    font-size: 12px;
+}

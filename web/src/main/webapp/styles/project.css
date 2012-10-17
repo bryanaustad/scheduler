@@ -1,0 +1,129 @@
+/*
+This is where any project specific CSS should reside.  The CSS for a number of jQuery plugins and patterns are included here for easy editing or you can remove them.  Most are so short it just doesn't make sense to have a separate CSS file for them.
+*/
+.showGrid { background: url('../images/bkg-grid.png'); } /* For use on the .container layer only */
+
+/*
+General HTML element declarations
+*/
+body { background-color:#DADADA; margin:0; padding:0; }
+table { border-right:1px solid #E5EAF1; border-bottom:1px solid #E5EAF1;}
+th a {
+	display:block;
+}
+th { background:url("../images/bkg-table_header.gif");  }
+th, td { border-top:1px solid #E5EAF1; border-left:1px solid #E5EAF1; }
+
+/*
+ID/Class declarations
+*/
+
+#head { padding-top:10px; background:#ccc; border-bottom:1px solid #666;}
+	#logo { font-size:28px; }
+	#tagline { font-size:12px; }
+
+	#top-nav { text-align:right; }
+	#top-nav ul { margin:0; padding:0; }
+	#top-nav li {  border-right:1px solid #666; display:inline; padding-right:7px; margin-right:4px; }
+	#top-nav li.last { border:0; margin:0; padding:0; }
+
+	#nav ul {
+		margin: 0;
+		padding:0;
+		margin-bottom:-1px;
+		list-style-type: none;
+		float:right;
+	}
+
+	#nav li {
+		margin: 0;
+		padding: 0;
+		display: inline;
+	}
+
+	#nav a {
+		position:relative;
+		float: left;
+		background: #f3f3f3;
+		font-weight: bold;
+		padding: 2px 10px 2px 10px;
+		margin-left: 5px;
+		border: 1px solid #666;
+		text-decoration: none;
+		color: #666;
+	}
+
+	#nav .active a {
+		border-bottom: 1px solid #fff;
+		background: #fff;
+		color: #000;
+	}
+
+	#nav a:hover {
+		background: #fff;
+	}
+
+#body { padding-top:20px; background:#fff; }
+
+#foot { border-top:1px solid #666; background:#dadada; padding-top:20px; overflow:hidden; /* hidden compensates for a bug with the normal clearfix being the last element */ }
+
+form dl dt { overflow:hidden; }
+form fieldset { margin-bottom: 15px; border:0; padding:0; margin:0;}
+form select { margin:0; }
+
+.help-indicator { background:url('../images/ico-help-16.png'); width:16px; height:16px; overflow:hidden; text-indent:-100em; margin-left:3px; padding-left:16px; margin-right:-7px; }
+
+.buttons2 { margin-left:15.7em; margin-top:20px; }
+.buttons { text-align:center; margin-top:20px; background-color:#f1f1f1; border:1px solid #ccc; padding:5px 0; }
+
+
+.prototype-notes { border-top:3px solid #666; width:950px; margin:60px auto 0; padding-top:20px; position:relative;  }
+.prototype-notes th { background:#f1f1f1; vertical-align:top; width:10em; }
+.pn-controls { top:10px; right:0; position:absolute; }
+
+
+/* Table Data
+------------------------------------------------------------------ */
+th a.order-asc { background: url("../images/ico-order-asc.gif") no-repeat center right; padding-right: 16px; }
+th a.order-desc { background: url("../images/ico-order-desc.gif") no-repeat center right; padding-right: 16px; }
+
+/* Pagination
+------------------------------------------------------------------ */
+.pagination { position: relative; width: 100%; }
+.pagination a { text-decoration: underline; }
+.pagination span { color: #999; }
+.pagination p { margin: 0 0 0 0; }
+.pagination p.results { margin-bottom: 5px; }
+.pagination p.results select { margin: 0; }
+.pagination p.paging { font-size: 85%; margin: 0 0 5px 0; }
+.pagination p.navigation { position: absolute; right: 0; bottom: 0; color: #999; text-align: right; }
+.pagination p.navigation a { font-weight: bold; }
+
+/* second look */
+.look2 #foot, .look2 #head, .look2 #body { width:950px; margin:0 auto; }
+.look2 #head { padding:10px 10px 0; border:1px solid #333; border-width: 1px 1px 0px; background-color:#fff; margin-top:20px; }
+.look2 #body { padding:0 10px; border:1px solid #333; border-width: 0 1px; }
+.look2 #foot { padding:0 10px; border:1px solid #333; border-width: 0 1px 1px; background-color:#fff; }
+
+/*
+Modal Dialog Styles
+*/
+a.modalCloseImg {background:url("../images/ico-close-x.png") no-repeat; width:25px; height:29px; z-index:3200; position:absolute; top:-15px; right:-18px; text-indent:-1000em; overflow:hidden; }
+/* IE6 fixes */
+* html #modalContainer a.modalCloseImg{
+	background:none;
+	filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(
+		src='images/ico-close-x.png', sizingMethod='scale'
+		); /* The src has to be relative to the page it being called on, not to the CSS file as it usually is */
+}
+* html #modalContainer, * html #modalLoader {
+	top: expression((document.documentElement.scrollTop	|| document.body.scrollTop) + Math.round(15 * (document.documentElement.offsetHeight || document.body.clientHeight) / 100) + 'px');
+}
+* html #modalOverlay, * html #modalIeBlocker {
+	height: expression(document.body.offsetHeight + 'px');
+}
+
+/* ptTimeSelect icon */
+.hasPtTimeSelect {
+	background: #fff url(../images/timepicker.gif) no-repeat 98% 3px !important;
+}

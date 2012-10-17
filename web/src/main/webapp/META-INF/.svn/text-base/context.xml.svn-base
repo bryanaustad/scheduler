@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Context reloadable="false" useHttpOnly="true" swallowOutput="true"	unpackWAR="false">
+	<ResourceLink name="jdbc/default/DataSource" global="jdbc/default/DataSource"/>
+	<ResourceLink name="MaxAttendence" global="MaxAttendence" />
+	<ResourceLink name="EmailFromAddress" global="EmailFromAddress" />
+	<ResourceLink name="EmailFromTitle" global="EmailFromTitle" />
+	<ResourceLink name="EmailSubject" global="EmailSubject" />
+	<ResourceLink name="EmailLogoURL" global="EmailLogoURL" />
+	<ResourceLink name="EmailLogoDescription" global="EmailLogoDescription" />
+	<ResourceLink name="EmailTitle" global="EmailTitle" />
+	<ResourceLink name="ConferenceTitle" global="ConferenceTitle" />
+	<ResourceLink name="ConferenceDate" global="ConferenceDate" />
+	<ResourceLink name="UnRegisterURL" global="UnRegisterURL" />
+	<ResourceLink name="EmailHost" global="EmailHost" />
+</Context>

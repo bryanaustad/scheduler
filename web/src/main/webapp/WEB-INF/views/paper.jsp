@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<%@include file="/WEB-INF/views/includes/init.jsp" %>
+<%
+String id = request.getParameter("id");
+if (id == null)
+	id = "";
+String mode = "Submit";
+if (id != "")
+	mode = "Edit";
+%>
+<html lang="en">
+<head>
+	<title><%= mode %> Paper</title>
+	<jsp:include page="/WEB-INF/views/includes/brains.jsp"/>
+	<style>
+		.errormsg{
+			padding-left: 20px;
+		}
+	</style>
+	<script type="text/javascript">
+	$(function() {
+		$.ajaxSetup({
+			// Disable caching of AJAX responses */
+			cache: false
+		});
+		var _data;
+		String.prototype.trim = function() {
+			return this.replace(/^\s+|\s+$/g,"");
+		}
+
+		String.prototype.ltrim = function() {
+			return this.replace(/^\s+/,"");
+		}
+
+		String.prototype.rtrim = function() {
+			return this.replace(/\s+$/,"");
+		}
+
+		function set(valid) {
+			var result = {};
+			for (var i = 0; i < valid.length; i++)
+				result[valid[i]] = true;
+			return result;
+		}
+
+		function split(val) {
+			return val.split(/;\s*/);
+		}
+
+		function extractLast(term) {
+			return split(term).pop();
+		}
+
+		function fill(search) {
+			$.getJSON("${pageContext['request'].contextPath}/course/list.single.json", search, function(data) {
+				_data = data;
+				if (data.id!=undefined) {
+					$("#id").val(data.id);
+					$("#name").val(data.name);
+					$("#desc").val(data.desc);
+					$("#url").val(data.url);
+					$("#track").val(data.track);
+					$("#track_len").val(data.track_len);
+					$("#authorlist").val(convertArraytoStringBySemicolon(data.authors));
+					$("#audiencelist").val(convertArraytoStringBySemicolon(data.audience));
+					$("#taglist").val(convertArraytoStringBySemicolon(data.tags));
+					$("#attachment").empty();
+					if (data.filename != undefined && data.filename != "") {
+						$("#attachment").append("<a target='_blank' href=\"${pageContext['request'].contextPath}/course/paper/"+htmlEscape(data.filename)+"\">"+htmlEscape(data.filedisplayname)+"</a>");
+					} else {
+						$("#attachment").val("");
+					}
+					$("#registered").val(data.registered);
+					$("#tentative").val(data.tentative);
+					$(".pageheading").html("Edit Paper");
+				}
+			});
+		}
+
+		$("#name").blur(function() {
+			fill({name:$("#name").val().trim()});
+		});
+
+		$("#name").autocomplete({
+			source: function(request, response) {
+				$.getJSON("${pageContext['request'].contextPath}/course/autolist.json", {
+					term: extractLast(request.term)
+				}, response);
+			},
+			minLength: 2
+		});
+
+		$("#authorlist").autocomplete({
+			source: function(request, response) {
+				$.getJSON("${pageContext['request'].contextPath}/author/list.json", {
+					term: extractLast(request.term)
+				}, response);
+			},
+			search: function() {
+				// custom minLength
+				var term = extractLast(this.value);
+				if (term.length < 2) {
+					return false;
+				}
+			},
+			focus: function() {
+				// prevent value inserted on focus
+				return false;
+			},
+			select: function(event, ui) {
+				var terms = split( this.value );
+				// remove the current input
+				terms.pop();
+				// add the selected item
+				terms.push( ui.item.value );
+				// add placeholder to get the semicolon-and-space at the end
+				terms.push("");
+				this.value = terms.join("; ");
+				return false;
+			}
+		});
+
+		$("#taglist").autocomplete({
+			source: function(request, response) {
+				$.getJSON("${pageContext['request'].contextPath}/tag/list.json", {
+					term: extractLast(request.term)
+				}, response);
+			},
+			search: function() {
+				// custom minLength
+				var term = extractLast(this.value);
+				if (term.length < 2) {
+					return false;
+				}
+			},
+			focus: function() {
+				// prevent value inserted on focus
+				return false;
+			},
+			select: function(event, ui) {
+				var terms = split( this.value );
+				// remove the current input
+				terms.pop();
+				// add the selected item
+				terms.push( ui.item.value );
+				// add placeholder to get the semicolon-and-space at the end
+				terms.push("");
+				this.value = terms.join("; ");
+				return false;
+			}
+		});
+
+		// fill in if we have an id
+		if ($("#id").val()!="") {
+			fill({id:$("#id").val()});
+		} else {
+			$.getJSON("${pageContext['request'].contextPath}/register/userinfo.json", null, function(data){
+				$("#authorlist").val(data.name);
+			});
+		}
+	});
+
+	function validateinputbox(fieldname,fieldtext){
+		if($.trim($('#'+fieldname).val())=="")
+			return " <li>"+fieldtext+" is required.</li><br/>";
+		return "";
+	}
+
+	function validateform() {
+		var errorMsg = "";
+		errorMsg += validateinputbox("name","Name Of Presentation");
+		errorMsg += validateinputbox("desc","Description Of Presentation");
+		errorMsg += validateinputbox("track","Track");
+		errorMsg += validateinputbox("track_len","Track Length");
+		errorMsg += validateinputbox("authorlist","Presenter Name's");
+		errorMsg += validateinputbox("audiencelist","Audience");
+		errorMsg += validateinputbox("taglist","Tag Name's");
+		$(".errormsg").html($.trim(errorMsg));
+		if (errorMsg=="") {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	</script>
+</head>
+<body onload="document.f.name.focus();" style="overflow: auto;">
+	<jsp:include page="/WEB-INF/views/includes/header.jsp"/>
+	<h2 class="pageheading"><%= mode %> Paper</h2>
+	<div align="center">
+		<div id="my-box" class="paperclass" style="width: 420px;">
+			<form name="f" class="ixf-form form-v1" method="POST" enctype="multipart/form-data" action="${pageContext['request'].contextPath}/paper/edit">
+				<input type="hidden" name="id" id="id" value="<%= id %>" />
+				<dl>
+					<div class="errormsg" ></div>
+				</dl>
+				<dl>
+					<dt><label for="name">Name of Presentation:<span class="colorRed">*</span></label></dt>
+					<dd><input type='text' name="name" id="name" size="50" /></dd>
+				</dl>
+				<dl>
+					<dt><label for="desc">Description of Presentation:<span class="colorRed">*</span></label></dt>
+					<dd><textarea id="desc" name="desc" size="800px" rows="3"></textarea></dd>
+				</dl>
+				<dl>
+					<dt><label for="url">URL:</label></dt>
+					<dd><input type='text' name="url" id="url" size="50" /></dd>
+				</dl>
+				<dl>
+					<dt><label for="authorlist">Presenters:(Semi-colon delimit if multiple "ie. Joe Slow ; John Poe")<span class="colorRed">*</span></label></dt>
+					<dd><input  type='text' name="authorlist" id="authorlist" size="50" /></dd>
+				</dl>
+				<dl>
+					<dt><label for="track_len">Length:<span class="colorRed">*</span></label></dt>
+					<dd><select name="track_len" id="track_len">
+						<option value="45">45 min</option>
+						<option value="90">90 min</option>
+					</select></dd>
+				</dl>
+				<dl>
+					<dt><label for="track">Track:<span class="colorRed">*</span></label></dt>
+					<dd><%@ include file="includes/track.jsp" %></dd>
+				</dl>
+				<dl>
+					<dt><label for="audiencelist">Audience for your presentation:(Semi-colon delimit if multiple "ie. Developers; QA; Solution Managers")<span class="colorRed">*</span></label></dt>
+					<dd><input  type='text' name="audiencelist" id="audiencelist" size="50" /></dd>
+				</dl>
+				<dl>
+					<dt><label for="taglist">Tags that describe type of presentation:(Semi-colon delimit if multiple "ie. Java; Web; ePub")<span class="colorRed">*</span></label></dt>
+					<dd><input type='text' name="taglist" id="taglist" size="50" /></dd>
+				</dl>
+				<dl>
+					<dt><label for="attachment">Slide Deck:</label></dt>
+					<dd><div name="attachment" id="attachment"></div></dd>
+				</dl>
+				<dl>
+					<dt><label for="datafile">Add or Replace Slide Deck:</label></dt>
+					<dd><input type="file" width="300px" name="datafile" id="datafile"/></dd>
+				</dl>
+				<dl>
+					<dd><input type="submit" id="paper" value="Submit"  class="ixf-button primary" style="width: 120px;" onclick="return validateform();"/></dd>
+				</dl>
+				<dl>
+					<dt><label for="registered">Registered:</label></dt>
+					<dd><input type='text' name="registered" id="registered" size="50" disabled="disabled" /></dd>
+				</dl>
+				<dl>
+					<dt><label for="tentative">Tentative:</label></dt>
+					<dd><input type='text' name="tentative" id="tentative" size="50" disabled="disabled" /></dd>
+				</dl>
+			</form>
+		</div>
+	</div>
+	<div  align="center">
+		<!-- <div class="church-logo">The Church of Jesus Christ of Latter-day Saints</div> -->
+	</div>
+</body>
+</html>

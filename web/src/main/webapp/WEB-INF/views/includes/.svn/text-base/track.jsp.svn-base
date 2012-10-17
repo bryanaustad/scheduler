@@ -1,0 +1,20 @@
+<select name="track" id="track">
+<optgroup label="LDSTech">
+	<option value="Booth">Booth</option>
+	<option value="Project">Project</option>
+	<option value="Presentation">Presentation</option>
+</optgroup>
+<optgroup label="SORT">
+	<option value="Architecture">Architecture</option>
+	<option value="Design">Design</option>
+	<option value="Development">Development</option>
+	<option value="EIM">EIM</option>
+	<option value="Infrastructure">Infrastructure</option>
+	<option value="ITSM">ITSM</option>
+	<option value="Leadership/Management">Leadership/Management</option>
+	<option value="Project Management">Project Management</option>
+	<option value="Quality Assurance">Quality Assurance</option>
+	<option value="Requirements">Requirements</option>
+	<option value="Other">Other</option>
+</optgroup>
+</select>

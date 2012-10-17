@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<%@include file="/WEB-INF/views/includes/init.jsp" %>
+<html lang="en">
+	<head>
+		<title>My Papers</title>
+		<jsp:include page="/WEB-INF/views/includes/brains.jsp"/>
+		<script type="text/javascript" charset="utf-8">
+			var papers;
+			var pgs;
+			var pgNum;
+			var tmp;
+			function sortByTrack(){
+				var sortedPapers = new Array();
+				var track = $("#track").val();
+				if(track == "All"){
+					breakIntoPages(papers);
+					viewSinglePage(0, papers);
+					return;
+				}
+				for(var i = 0; i < papers.length; i++){
+					if(papers[i].track != undefined && papers[i].track == track){
+						sortedPapers.push(papers[i]);
+					}
+				}
+				breakIntoPages(sortedPapers);
+				viewSinglePage(0, sortedPapers, true);
+			};
+
+			function breakIntoPages(_papers){
+				var next = 0;
+				var j = 0;
+				pgs = new Array();
+				var pg = new Array();
+				for(var i in _papers){
+					if(next > 4){
+						j++;
+						pgs.push(pg);
+						pg = new Array();
+						next = 0;
+					}
+					pg.push(_papers[i]);
+					next++;
+				}
+				pgs.push(pg);
+			};
+
+			function viewPage(pgN){
+				viewSinglePage(pgN, tmp);
+			}
+
+			function viewSinglePage(pgN, _papers, viewAll){
+				tmp = _papers;
+				var pg = pgs[pgN];
+				var first = ((pgN + 1) + (4*pgN));
+				var last = (first + pg.length - 1);
+				if(_papers.length < 1)
+					first = 0;
+				$("#pageRange").empty();
+				if(!viewAll){
+					$("#pageRange").append(first + " - " + last + " of " + _papers.length);
+					var before = pgN - 1;
+					var after = pgN + 1;
+
+					if(before >= 0){
+						$("#pageRange").append("<a href=\"javascript:viewPage("+ before + ");\"><</a>");
+					}
+					if(after < _papers.length/5){
+						$("#pageRange").append("<a href=\"javascript:viewPage("+ after + ");\">></a>");
+					}
+				}
+				var end;
+				var attachment = "";
+				var checked = "";
+				var approve_ip = "";
+				var approve_cor = "";
+				$("#thetable").empty();
+				$("#thetable").append("<tbody>");
+				$("#thetable").append("<thead><tr><th>Presentation Name</th><th>Presenters</th><th>Submitter</th><th>Track</th><th>Tags</th><th>Audience</th><th>Slide Deck</th><th>Tech Lead Approval</th><th>IP Approval</th><th>Correlation Approval</th></tr></thead>");
+				//for(var i in pgs){
+					var pg;
+					if(viewAll){
+						pg = _papers;
+					}else{
+						pg = pgs[pgN];
+					}
+
+					for(var j in pg){
+						if(pg[j].filename === undefined) {
+							attachment = "";
+						} else {
+							attachment = "<a target='_blank' href=\"${pageContext['request'].contextPath}/course/paper/"+htmlEscape(pg[j].filename)+"\">"+htmlEscape(pg[j].filedisplayname)+"</a>";
+						}
+						if(pg[j].approve_tech == undefined | pg[j].approve_tech === false)
+							checked = "";
+						else
+							checked = "checked=\"checked\"";
+						if(pg[j].approve_ip == undefined | pg[j].approve_ip === false)
+							approve_ip = "";
+						else
+							approve_ip = "checked=\"checked\"";
+						if(pg[j].approve_cor == undefined | pg[j].approve_cor === false)
+							approve_cor = "";
+						else
+							approve_cor = "checked=\"checked\"";
+						end = pg[j].id;
+						var row = $("<tr id=\"" + pg[j].id + "\"><td>" +
+								"<a href=\"${pageContext['request'].contextPath}/paper?id=" + pg[j].id + "\">" + htmlEscape(pg[j].name) + "</a>" +
+								"</td><td>" +
+								htmlEscape(convertArraytoStringBySemicolon(pg[j].authors)) +
+								"</td><td>" +
+								htmlEscape(pg[j].email) +
+								"</td><td>" +
+								htmlEscape(pg[j].track) +
+								"</td><td>" +
+								htmlEscape(convertArraytoStringBySemicolon(pg[j].tags)) +
+								"</td><td>" +
+								htmlEscape(convertArraytoStringBySemicolon(pg[j].audience)) +
+								"</td> " +
+								"<td>" +
+								attachment +
+								"</td><td>" +
+								"<input type=\"checkbox\" disabled=\"disabled\" id=\"approve_tech" + pg[j].id + "\" value=\"" + pg[j].id + "\" " + checked + "\>" +
+								"</td><td>" +
+								"<input type=\"checkbox\" disabled=\"disabled\" id=\"approve_ip" + pg[j].id + "\" value=\"" + pg[j].id + "\" " + approve_ip + "\>" +
+								"</td><td>" +
+								"<input type=\"checkbox\" disabled=\"disabled\" id=\"approve_cor" + pg[j].id + "\" value=\"" + pg[j].id + "\" " + approve_cor + "\>" +
+								"</td></tr>");
+						$("#thetable").append(row);
+						//var descrow = $("<tr id=\"desc_" + pg[j].id + "\"><td>Presentation Description:</td><td colspan=\"10\">" + htmlEscape(pg[j].desc) + "</td></tr>");
+						//$("#thetable").append(descrow);
+					}
+				//}
+				$("#thetable").append("</tbody>");
+			}
+
+			$(function() {
+				$.ajaxSetup({
+					// Disable caching of AJAX responses */
+					cache: false
+				});
+				$.getJSON("${pageContext['request'].contextPath}/course/papers.json", null, function(data) {
+					papers = data;
+					breakIntoPages(papers);
+					viewSinglePage(0, papers, true);
+					$('#thetable').dataTable({
+						"sScrollX": "100%",
+						"sScrollY": "400px",
+						"bPaginate": false
+					});
+				});
+			});
+		</script>
+
+	</head>
+	<body class="signin">
+		<jsp:include page="/WEB-INF/views/includes/header.jsp"/>
+		<h2 class="pageheading">My Papers</h2>
+		<div style="overflow: auto;">
+			<table class="ixf-table ixf-table-default ixf-fixed" id="thetable" data-dt-rows="5">
+			</table>
+		</div>
+		<div id="pageRange">
+		</div>
+		<!-- <div class="church-logo">The Church of Jesus Christ of Latter-day Saints</div> -->
+	</body>
+</html>

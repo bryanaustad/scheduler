@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<!-- =========================================================== -->
+	<!-- Service Bean Context: Model/Service/DAO					 -->
+	<!-- =========================================================== -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:jee="http://www.springframework.org/schema/jee"
+	xmlns:stack-db="http://code.lds.org/schema/spring/db"
+	xmlns:sec="http://www.springframework.org/schema/security"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:lds-account="http://code.lds.org/schema/spring/lds-account"
+	xmlns:service-proxy="http://code.lds.org/schema/spring/service-proxy"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://code.lds.org/schema/spring/db http://code.lds.org/schema/spring/db/stack-db-3.0.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+		http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-3.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd
+		http://code.lds.org/schema/spring/lds-account http://code.lds.org/schema/spring/lds-account/stack-lds-account-3.0.xsd
+		http://code.lds.org/schema/spring/service-proxy http://code.lds.org/schema/spring/service-proxy/stack-service-proxy-1.1.xsd"
+	default-lazy-init="true">
+
+	<service-proxy:component-scan base-package="org.lds">
+		<service-proxy:exclude-filter expression="org.springframework.stereotype.Controller" type="annotation"/>
+	</service-proxy:component-scan>
+
+	<bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean">
+		<property name="validationMessageSource" ref="messageSource"/>
+	</bean>
+
+	<bean id="authenticationFailureHandler" class="org.lds.security.CustomAuthenticationFailureHandler" />
+
+	<!-- one of the properties available; the maximum file size in bytes -->
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="maxUploadSize" value="30000000"/>
+	</bean>
+
+	<!-- Application Message Bundle -->
+	<bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+		<property name="basenames">
+			<list>
+				<value>classpath:messages</value>
+			</list>
+		</property>
+	</bean>
+
+	<tx:annotation-driven />
+ <!--
+	<stack-db:transaction-manager />
+
+	<stack-db:data-source jndi-name="jdbc/default/DataSource"/>
+	<stack-db:hibernate persistence-unit-name="org.lds.scheduler" validator-ref="validator">
+		<stack-db:hibernate-properties>
+			<entry key="hibernate.hbm2ddl.auto" value="update" />
+		</stack-db:hibernate-properties>
+	</stack-db:hibernate>
+-->
+	<sec:global-method-security jsr250-annotations="enabled" pre-post-annotations="enabled" />
+	<lds-account:wam > <!-- skip-cookie-discovery="false" removed this attribute -->
+		<lds-account:intercept-url pattern="/canary/**" filters="none" />
+		<lds-account:intercept-url pattern="/styles/**" filters="none" />
+		<lds-account:intercept-url pattern="/images/**" filters="none" />
+		<lds-account:intercept-url pattern="/scripts/**" filters="none" />
+		<lds-account:intercept-url pattern="/favicon.ico" filters="none" />
+		<lds-account:intercept-url pattern="/**" access="isAuthenticated()" />
+		<lds-account:logout invalidate-session="true" />
+	</lds-account:wam>
+
+	<sec:authentication-manager>
+		<sec:authentication-provider ref="ldsAccountAuthenticationProvider" />
+	</sec:authentication-manager>
+
+	<lds-account:account-details-authentication-provider delegating-authentication-provider-ref="ssoAuthenticationProvider" />
+
+	<context:mbean-export default-domain="org.lds.scheduler"/>
+
+	<!-- Bean to parse MANIFEST.MF providing useful project information -->
+	<bean id="manifestBean" class="org.lds.stack.system.spring.SpringManifestBean" lazy-init="false"/>
+	<!-- Bean to provide context information to JMX -->
+	<bean id="contextMBean" class="org.lds.stack.system.spring.SpringContextMBean" lazy-init="false"/>
+
+	<jee:jndi-lookup id="maxAttendence" jndi-name="MaxAttendence"/>
+	<jee:jndi-lookup id="emailFromAddress" jndi-name="EmailFromAddress"/>
+	<jee:jndi-lookup id="emailFromTitle" jndi-name="EmailFromTitle"/>
+	<jee:jndi-lookup id="emailSubject" jndi-name="EmailSubject"/>
+	<jee:jndi-lookup id="emailLogoURL" jndi-name="EmailLogoURL"/>
+	<jee:jndi-lookup id="emailLogoDescription" jndi-name="EmailLogoDescription"/>
+	<jee:jndi-lookup id="emailTitle" jndi-name="EmailTitle"/>
+	<jee:jndi-lookup id="conferenceTitle" jndi-name="ConferenceTitle"/>
+	<jee:jndi-lookup id="conferenceDate" jndi-name="ConferenceDate"/>
+	<jee:jndi-lookup id="unRegisterURL" jndi-name="UnRegisterURL"/>
+	<jee:jndi-lookup id="emailHost" jndi-name="EmailHost"/>
+</beans>

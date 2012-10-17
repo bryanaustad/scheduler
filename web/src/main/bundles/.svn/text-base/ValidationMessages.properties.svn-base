@@ -1,0 +1,3 @@
+manageExample.namerequired=Name is required.
+manageExample.datarequired=Data is required.
+manageExample.sizebetween=The size must be between {min} and {max}.

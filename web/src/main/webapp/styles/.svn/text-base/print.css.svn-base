@@ -1,0 +1,25 @@
+
+*{position:relative}
+/* PRINT */
+#session-d{display: none;}
+#header-d{display: none;}
+#content-d{padding: 12px 44px;width: 1111px;}
+#action-d{display: none;}
+#search-d{display: none;}
+#calendar-d{}
+#calendar{
+	overflow: hidden;
+	width: 1050px; height: 913px;
+}
+.conf-sched-day{
+	height: 913px;
+}
+#results-d{display: none;}
+#filters-d{display: none;}
+
+/* If you're having trouble printing relative links, uncomment and customize this:
+   (note: This is valid CSS3, but it still won't go through the W3C CSS Validator) */
+
+/* a[href^="/"]:after {
+  content: " (http://www.yourdomain.com" attr(href) ") ";
+} */

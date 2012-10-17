@@ -1,0 +1,585 @@
+/* Global */
+* {
+	margin: 0;
+	padding: 0;
+	position: relative;
+}
+body {
+	background-color: #e9e8e8;
+	font-family: arial, "lucida console", sans-serif;
+}
+a {
+	outline: none
+}
+.clearfix {
+	clear:both;
+}
+
+/* --- HEADER STUFF --- */
+#session-d {
+	background-color: #000;
+	color: #fff;
+	font-size: .75em;
+	height: 38px;
+}
+#user-d {
+	float: right;
+	top: 12px;
+	width: 12em;
+}
+.menu-d {
+	float: right;
+	top: 12px;
+	/*width: 12em;*/
+	margin-right: 20px;
+}
+#header-d {
+	background-image: url("../images/bkg-header.png");
+	color: #ccc;
+	height: 38px;
+}
+#header-d h1{
+	font-size: 1.25em;
+	font-weight: normal;
+	left: 12px;
+	top: 12px;
+	width: 36em;
+}
+
+/* --- PAGE STUFF --- */
+
+#content-d {
+	padding: 12px 44px;
+	/* width: 1111px; */
+}
+#action-d {
+	color: #666;
+	font: 11px/12px arial;
+	height: 30px;
+}
+#action-d div {
+	cursor: pointer;
+	float: left;
+	height: 20px;
+	padding: 5px;
+	width: 125px;
+}
+#action-d div:hover {
+	color: #333;
+	text-shadow: #999 1px 1px 1px;
+}
+#action-d div span {
+	left: 5px;
+	top: -5px;
+}
+
+/* --- SEARCH STUFF --- */
+#search-d {
+	float: right;
+	margin: 0 28px 0 0;
+	top: 8px;
+}
+#search-d img, #search-d div {
+	float: left;
+	height: 64px;
+	padding: 2px 4px;
+	text-align: right;
+}
+#search-d input {
+	background-image: url("../images/bkg-search-dark.png");
+	border: none;
+	color: #ccc;
+	float: left;
+	height: 21px;
+	outline: none;
+	padding: 5px 5px 0;
+	width: 12em;
+}
+#search-d a:link, #search-d a:visited {
+	color: #ccc;
+	text-decoration: none;
+}
+#search-d a:hover {
+	color: #ddd;
+	text-decoration: underline;
+}
+
+/* --- LANDING PAGE STUFF --- */
+#tech-desc {
+	float: left;
+	padding: 10px;
+	width: 440px;
+}
+#tech-button {
+	background-image:url('../images/landingPage/button-bkgrnd.png');
+	background-repeat:no-repeat;
+	width : 438px;
+	height: 117px;
+	cursor: default;
+}
+#tech-button:hover {
+	cursor:pointer;
+	background-image:url('../images/landingPage/button-bkgrnd-hover.png');
+}
+#tech-icon1-div {
+	padding: 10px 10px 5px 15px;
+	float: left;
+}
+#tech-icon2-div {
+	padding: 18px 10px 5px 15px;
+	float: left;
+}
+#tech-text-div {
+	width: 300px;
+	padding: 10px;
+	float: left;
+}
+#almost-ready-d {
+	position: absolute;
+	width: 215px;
+	height: 120px;
+	top:0px;
+	left: 100px;
+}
+
+/* --- SCHEDULE STUFF --- */
+#calendar-d {
+	float: left;
+}
+
+/* --- RESULTS STUFF --- */
+#results-d {
+	float: left;
+}
+
+/* --- FILTER STUFF --- */
+#filters-d {
+	float: left;
+}
+
+/* --- MODAL STUFF ---*/
+#modal {
+	width: 100%; height: 100%;
+}
+#modal-hdr {
+	background-image: url(../images/bkg-black-grad-38.png);
+	color: #fff;
+	font: bold 16px/16px arial;
+	width: 100%; height: 38px;
+}
+#modal-hdr span {
+	top: 12px;
+	left: 15px;
+}
+#modal-body, #modal-body2 {
+	background-color: #000;
+	color: #ccc;
+	font: 10px/12px arial;
+	overflow-y: auto;
+	padding: 18px;
+	height: 300px;
+}
+#modal-tiny {
+	background-color: #000;
+	color: #ccc;
+	font: bold 16px/16px arial;
+	overflow-y: auto;
+	padding: 18px;
+	height: 120px;
+	text-align: center;
+}
+#modal-tiny img {
+	padding: 26px
+}
+#modal-body div {
+	float: left;
+	padding: 2px;
+	width: 143px;
+}
+#modal-body div:hover {
+	color: #fff;
+	text-decoration: underline;
+}
+#modal-body div span {
+	color: #999;
+}
+#modal-body2 div {
+	padding: 4px;
+}
+#modal-body2 div.name, #modal-body2 div span {
+	font-size: 11px;
+	font-weight: bold;
+}
+#modal-body2 div.register {
+	color: #cdf;
+	cursor: pointer;
+	font-size: 14px;
+	font-weight: bold;
+}
+#modal-body2 div.register:hover {
+	color: #fff;
+	text-decoration: underline;
+}
+#modal-ftr {
+	background-image: url(../images/bkg-black-grad-12.png);
+	width: 100%; height: 12px;
+}
+#simplemodal-container a.modalCloseImg, #simplemodal-container2 a.modalCloseImg {
+	background:url(../images/white-x.png) no-repeat;
+	width:8px;
+	height:8px;
+	display:inline;
+	z-index:3200;
+	position:absolute;
+	top:13px;
+	right:13px;
+	cursor:pointer;
+}
+#simplemodal-container2 a.modalCloseImg {
+	background: none;
+}
+
+/* GWT Dialog Style */
+.dialogBox {
+	border: none;
+	/*padding: 10px 15px 15px 15px;*/
+	padding: 0px;
+	background: #000;
+	z-index:15;
+}
+.dialogBox table, .dialogBox tr, .dialogBox td, .dialogBox th {
+	border: none; margin: 0px; width: auto; padding: 0px;
+}
+.dialogTop {
+	background-image: url(../images/bkg-header.png);
+}
+.dialogBottom {
+}
+.dialogBox .modalLinkWrapper {
+	background-image: url(../images/bkg-header.png);
+	height: 32px;
+}
+.dialogBox .modalLinkWrapper div {
+	float: right;
+	margin-right: 16px;
+	margin-top: 8px;
+}
+.dialogBox .modalLinkWrapper div a {
+	font-size: 12px;
+	color: #DDD;
+}
+.dialogBox .Caption {
+	/*font-size: 23px;*/
+	/*color: #807C68;*/
+	/*font-family: Palatino, "Palatino Linotype", Times, "Times New Roman", serif;*/
+	/*font-style: inherit;*/
+	/*font-weight: inherit;*/
+	/*text-transform: inherit;*/
+	/*text-decoration: inherit;*/
+	/*margin-bottom: 10px;*/
+	font-family:arial;
+	font-size:16px;
+	font-weight:bold;
+	padding: 8px;
+	color: #DDD;
+	width: 700px;
+}
+.diaglogBackgroundShow {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	width: 100%;
+	height: 1080px;
+	background: #222;
+	opacity:.35;
+	z-index:14;
+}
+.diaglogBackgroundHide {
+	display: none;
+}
+.dialogBox .dialogContents {
+	width: 700px;
+	height: 300px;
+	overflow-y: auto;
+	padding: 8px;
+	font-size: 12px;
+	color: #DDD;
+}
+.dialogBox .dialogContents .dialogSessionTime {
+	margin-bottom:8px;
+}
+.dialogBox .dialogContents .tagsModalColumn {
+	float: left;
+	width: 215px;
+	margin-right: 20px;
+}
+.dialogBox .dialogContents .tagsModalColumnRight {
+	float: left;
+	margin-right: 0px;
+}
+.dialogBox .dialogContents .tagsModalColumn div, .dialogBox .dialogContents .tagsModalColumnRight div {
+	margin-bottom: 8px;
+}
+.dialogBox .dialogContents .tagsModalColumn a, .dialogBox .dialogContents .tagsModalColumnRight a {
+	font-size: 12px;
+	color: #DDD;
+}
+
+.loadingModal img {
+	margin: 75px 100px;
+}
+.loadingModal .modalCloseLink a {
+	display:none;
+}
+.loadingModal .Caption {
+	width: auto;
+}
+.loadingModal .dialogContents {
+	width: auto;
+	height: 200px;
+}
+
+.model-author-link {
+	color: #cdf;
+	cursor: pointer;
+	font: bold 11px/12px arial;
+	text-decoration: underline;
+}
+.model-author-links {
+	cursor: pointer;
+	text-decoration: underline;
+	text-align: left;
+}
+
+.editable INPUT[type=textarea] {
+	line-height: 50px;
+	width : 250px;
+	COLOR: #0f0; FONT-WEIGHT: bold;
+}
+
+.courseeditlink {
+	color:#cdf;
+	cursor: pointer;
+	font: bold 11px/12px arial;
+	text-decoration: underline;
+	text-align:right;
+	width: 458px;
+	display: block;
+	vertical-align: middle;
+}
+
+.spauthorsedit {
+	background-image:url('../images/edit.jpg');
+	background-color:#000;
+	cursor: pointer;
+}
+
+.authorinfo
+{
+	float: left;
+	width: 320px;
+}
+.authorimg
+{
+	float: left;
+	width: 100px;
+	height: 150px;
+}
+.model-label {
+	width: 80px;
+	display: inline-block;
+	font: bold 11px/12px arial;
+}
+
+.model-div {
+	display: inline-block;
+}
+.model-dtls-line {
+	display: inline-block;
+	font:  11px/12px arial;
+}
+.courseeditimg {
+	background-image: url('../images/edit.png');
+	cursor: pointer;
+	width: 20px;
+	display: inline-block;
+}
+table.attendeesStyle {
+	overflow: visible;
+	color: #666666;
+	vertical-align: middle;
+
+}
+table.attendeesStyle th {
+	padding: 8px;
+	text-align: left;
+	width: 50px;
+	white-space: nowrap;
+	font-weight: 600;
+}
+table.attendeesStyle td {
+	padding: 8px;
+	text-align: center;
+	cursor: pointer;
+}
+
+.sessionclass {
+	width: 600px;
+	overflow: visible;
+	max-height: none\9;
+}
+
+table.sessiontable {
+	font-size:11px;
+	width: 600px;
+	overflow: visible;
+	max-height: none\9;
+}
+table.sessiontable th {
+	padding: 8px;
+	text-align: center;
+	vertical-align: middle;
+	font-weight: normal;
+}
+table.sessiontable td {
+	padding: 8px;
+	text-align: center;
+	vertical-align: top;
+	padding-left: 20px;
+	white-space:nowrap;
+}
+
+table.sessiontable label {
+	color: #666666;
+	font-size: 14px;
+	cursor: pointer;
+}
+
+
+table#attendeesname td {
+	text-align: left;
+}
+table#attendeesname {
+	white-space:nowrap;
+	padding-right:15px;
+	padding-left:15px;
+	vertical-align:middle;
+	text-align:left;
+	margin-top: 3px;
+}
+
+buttonsize {
+	width: 120px;
+}
+
+a.menulink , a.menulink:link, a.menulink:visited {
+	color: #FFF;
+	font-family: arial;
+	font-size: 12px;
+	font-weight: 200;
+}
+h1.headerfont {
+	font-size: 1.25em;
+	font-weight: normal;
+	left: 34px;
+	top: 34px;
+	width: 36em;
+	color: #FFF;
+}
+
+body.signin h1.headerfont {
+	color: #FFF;
+	text-align: left;
+}
+
+body h2.pageheading {
+	font-size:1.25em;
+	padding-top:5px;
+	text-align:center;
+	text-transform:none;
+}
+
+#biographystyle {
+	float: left;
+	width: 80px;
+}
+
+.desc_style {
+	/*float: right;*/
+	width:210px;
+	display: inline-block;
+	white-space: pre-line;
+}
+
+#courseback {
+	width: 100%;
+	padding-left: 400px;
+	text-align: right;
+	display: block;
+}
+
+.course-back-link {
+	color:#cdf;
+	cursor: pointer;
+	font: bold 11px/12px arial;
+	text-decoration: underline;
+	width: 400px;
+	display: block;
+}
+
+.labelerror {
+	text-transform: capitalize;
+	display: inline-block;
+}
+
+.errormsg {
+	color:#CC0717;
+	font-size: 13px;
+	font-weight:bold;
+	list-style:disc;
+	text-align: left;
+	padding-left: 10px;
+}
+
+.colorRed {
+	color:#FF0000;
+	font-size: 15px;
+	font-weight: bold;
+}
+
+.rotateimg {
+	vertical-align:middle;
+	background: url('../images/bkg-table_header.gif') no-repeat center center fixed transparent;
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	-o-background-size: cover;
+	background-size: cover;
+}
+.rotatetext {
+	line-height:18px;
+	vertical-align:middle;
+	display:block;
+	font-weight: bold;
+	font-size: 13px;
+	color: #666666;
+	vertical-align:middle;
+	white-space:nowrap;
+	/* Safari */
+	-webkit-transform: rotate(-90deg);
+	/* Firefox */
+	-moz-transform: rotate(-90deg); /* FF3.5+ */
+	-moz-transform-origin: 20px 0px;
+	/* Internet Explorer */ filter: progidXImageTransform.Microsoft.BasicImage(rotation=3);
+	-o-transform: rotate(-90deg);  /* Opera 10.5 */
+	-webkit-transform: rotate(-90deg);  /* Saf3.1+, Chrome */
+	filter:  progid:DXImageTransform.Microsoft.Matrix(sizingMethod='auto expand',
+				M11=6.123031769111886e-17, M12=1, M21=-1, M22=6.123031769111886e-17); /* IE6,IE7 */
+	-ms-filter: "progid:DXImageTransform.Microsoft.Matrix(SizingMethod='auto expand',
+				M11=6.123031769111886e-17, M12=1, M21=-1, M22=6.123031769111886e-17)"; /* IE8 */
+	zoom: 1;
+}
+
+.outlinedashboard {
+	border-left: 0px ;
+	border-top: 0px ;
+}

@@ -1,0 +1,129 @@
+#results {
+	padding-left: 17px;
+	width: 451px; height: 910px;
+}
+
+/* Global */
+.tag {
+	font-size: .8em;
+	line-height: 8px;
+	text-decoration: underline;
+}
+.tag:hover {
+	color: #000;
+	cursor: pointer;
+}
+
+.conf-search-hdr {
+	color: #666;
+	font: bold 11px/12px arial;
+	height: 19px;
+	padding-top: 13px;
+	vertical-align: baseline;
+	width: 100%;
+}
+
+.conf-search-sec {
+	background: white url('../images/bkg-res-srch.png') repeat-x top left;
+	border-left: 1px solid #c1c1c1;
+	border-right: 1px solid #c1c1c1;
+	border-top: 1px solid #c1c1c1;
+	padding: 8px 10px;
+	width: 431px; height: 23px;
+}
+
+.conf-search-left {
+	background: white url('../images/search.png') no-repeat top left;
+	float: left;
+	width: 24px; height: 22px;
+}
+
+.conf-search-right {
+	background: white url('../images/search.png') no-repeat top right;
+	float: left;
+	width: 19px; height: 22px;
+}
+
+.conf-search-center input {
+	background: white url('../images/bkg-search.gif') repeat-x top left;
+	border: 0;
+	float: left;
+	height: 15px; width: 377px;
+	padding: 4px 3px 3px;
+	font: 12px/16px arial;
+	color: #000;
+}
+
+.conf-result-sec {
+	background: white;
+	border-left: 1px solid #c1c1c1;
+	border-right: 1px solid #c1c1c1;
+	border-bottom: 1px solid #c1c1c1;
+	height: 838px; width: 100%;
+	overflow-y: auto;
+}
+
+.course {
+	background-image: url(../images/bkg-check-open.png);
+	background-repeat: no-repeat;
+	border-bottom: 1px solid #c1c1c1;
+	color: #888;
+	height: 109px; width: 100%;
+	font: 11px/16px arial;
+	overflow: hidden;
+}
+
+.course .actions {
+	cursor: pointer;
+	float: left;
+	height: 109px; width: 44px;
+}
+
+.course .title {
+	color: #333;
+	font-weight: bold;
+	padding: 10px 0 3px;
+}
+
+.course .title:hover {
+	cursor: pointer;
+	text-decoration: underline;
+}
+
+.course .title span {
+	color: #666;
+	float: right;
+	font: normal 10px/12px arial;
+	padding-right: 16px;
+}
+
+.course .desc {
+	height: 50px;
+	overflow-y: hidden;
+}
+
+.course .desc:hover {
+	cursor: pointer;
+}
+
+.course .tags {
+	overflow-y: hidden;
+}
+
+div.tentative {
+	background-color: #efefef;
+	background-image: url(../images/bkg-check-blue-check.png);
+	background-repeat: no-repeat;
+}
+
+div.registered {
+	background-color: #e0e7fa;
+	background-image: url(../images/bkg-check-red-x.png);
+	background-repeat: no-repeat;
+}
+
+div.general {
+	background-color: #ffefa3;
+	background-image: url(../images/bkg-check-open.png);
+	background-repeat: no-repeat;
+}

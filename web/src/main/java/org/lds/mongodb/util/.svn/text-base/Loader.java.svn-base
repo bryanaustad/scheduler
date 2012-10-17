@@ -1,0 +1,81 @@
+package org.lds.mongodb.util;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.util.Set;
+
+import org.bson.types.ObjectId;
+
+import com.mongodb.BasicDBList;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
+import com.mongodb.Mongo;
+import com.mongodb.util.JSON;
+
+public class Loader {
+	public void batchLoad(String fileLocation) {
+		Mongo m = null;
+		try {
+			m = new Mongo("localhost", 27017);
+			DB db = m.getDB("mydb");
+
+			File f = new File(fileLocation);
+			FileReader fr = new FileReader(f);
+			BufferedReader br = new BufferedReader(fr);
+			String s;
+			StringBuilder sb = new StringBuilder();
+			while((s = br.readLine())!=null) {
+				sb.append(s);
+			}
+			DBObject dbo = (DBObject)JSON.parse(sb.toString());
+			System.out.println(dbo);
+
+			DBCollection coll = db.getCollection("courses");
+			Set<String> keys = dbo.keySet();
+			for (String key:keys) {
+				BasicDBObject obj = (BasicDBObject)dbo.get(key);
+				ObjectId objId = new ObjectId();
+				String courseId = objId.toString();
+				obj.put("_id", objId);
+				obj.put("id", courseId);
+				System.out.println(obj);
+				coll.insert((BasicDBObject)obj);
+			}
+		} catch(Exception e) {
+			System.out.print(e);
+		} finally {
+			m.close();
+		}
+	}
+
+	public DBObject getCollection(String name) {
+		DBObject dbo = new BasicDBObject();
+		BasicDBList list = new BasicDBList();
+		Mongo m = null;
+		try {
+			m = new Mongo("localhost", 27017);
+			DB db = m.getDB("mydb");
+			DBCollection coll = db.getCollection(name);
+
+			DBCursor cursor = coll.find();
+			while(cursor.hasNext()) {
+				dbo = cursor.next();
+				list.add(dbo);
+			}
+		} catch(Exception e) {
+			System.out.println(e);
+		} finally {
+			m.close();
+		}
+		return list;
+	}
+
+	public static void main(String[] args) {
+		Loader l = new Loader();
+		l.batchLoad("/example/courses.json");
+	}
+}

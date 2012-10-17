@@ -1,0 +1,40 @@
+10
+
+dir
+872
+https://code.lds.org/svn/sort/branches/scheduler/web/src/main
+https://code.lds.org/svn/sort
+
+
+
+2012-04-24T15:29:02.173643Z
+872
+bryan
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+618bc67b-106b-0410-8888-d9ad19a55b08
+
+bundles
+dir
+
+java
+dir
+
+resources
+dir
+
+webapp
+dir
+

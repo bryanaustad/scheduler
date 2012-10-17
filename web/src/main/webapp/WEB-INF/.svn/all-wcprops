@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/sort/!svn/ver/872/branches/scheduler/web/src/main/webapp/WEB-INF
+END
+scheduler-servlet.xml
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svn/sort/!svn/ver/864/branches/scheduler/web/src/main/webapp/WEB-INF/scheduler-servlet.xml
+END
+web.xml
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/sort/!svn/ver/594/branches/scheduler/web/src/main/webapp/WEB-INF/web.xml
+END

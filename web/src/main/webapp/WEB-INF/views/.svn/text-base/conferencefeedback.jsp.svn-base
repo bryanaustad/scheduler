@@ -1,0 +1,376 @@
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<title>Conference Feedback</title>
+	<jsp:include page="/WEB-INF/views/includes/brains.jsp"/>
+	<script type="text/javascript">
+	$(function() {
+		var _data;
+		String.prototype.trim = function() {
+			return this.replace(/^\s+|\s+$/g,"");
+		}
+		String.prototype.ltrim = function() {
+			return this.replace(/^\s+/,"");
+		}
+		String.prototype.rtrim = function() {
+			return this.replace(/\s+$/,"");
+		}
+		function set (valid) {
+			var result = {};
+			for (var i = 0; i < valid.length; i++)
+			  result[valid[i]] = true;
+			return result;
+		}
+
+		function split(val) {
+			return val.split(/;\s*/);
+		}
+		function extractLast(term) {
+			return split(term).pop();
+		}
+
+		//If the user is not an admin, ensure the feedback source field is read-only
+		$("#source").attr("readonly", "readonly");
+		//	The above line ensures the box is read-only even if the following JSON request fails
+		$.getJSON("${pageContext['request'].contextPath}/roles/get", null, function(data) {
+			$("#source").val(data.name);
+			$("#sourceId").val(data.accountid);
+			if (data.admin) {
+				$("#source").attr("readonly", "");
+			}
+			$("#source").trigger("blur");
+		});
+
+		$("#source").autocomplete({
+			source: function(request, response) {
+				$.getJSON("${pageContext['request'].contextPath}/attendee/autolist.json",{
+					term: extractLast(request.term)
+				}, response);
+			},
+			minLength: 2
+		});
+
+		$("#source").blur(function() {
+			if ($("#source").val() != "") {
+				fill({name:$("#source").val().trim()});
+			} else {
+				$("#sourceId").val("");
+			}
+		});
+
+		function fill(search) {
+			//Get the feedback source's account ID
+			$.getJSON("${pageContext['request'].contextPath}/author/details.json", search, function(data) {
+				if (data.name!=undefined) {
+					$('#sourceId').val(data.accountid);
+				}
+				//Get previous feedback
+				$.getJSON("${pageContext['request'].contextPath}/course/getfeedback/conf.json", {sourceId:$("#sourceId").val().trim()}, function(data) {
+					if (data.sourceId!=undefined) {
+						$("#background").val(data.background);
+						$("#job").val(data.job);
+						$("#distance").val(data.distance);
+						$("input[name=location]")[data.location - 1].checked = true;
+						$("input[name=food]")[data.food - 1].checked = true;
+						$("input[name=presentationcontent]")[data.presentationcontent - 1].checked = true;
+						$("input[name=presentationquality]")[data.presentationquality - 1].checked = true;
+						$("input[name=presentationlength]")[data.presentationlength - 1].checked = true;
+						$("input[name=conferencelength]")[data.conferencelength - 1].checked = true;
+						$("input[name=schedule]")[data.schedule - 1].checked = true;
+						$("input[name=keynote0]")[data.keynote0 - 1].checked = true;
+						$("input[name=keynote1]")[data.keynote1 - 1].checked = true;
+						$("input[name=keynote2]")[data.keynote2 - 1].checked = true;
+						$("input[name=applicable]")[data.applicable - 1].checked = true;
+						$("input[name=overall]")[data.overall - 1].checked = true;
+						$("input[name=service]")[data.service - 1].checked = true;
+						$("#bestexp").val(data.bestexp);
+						$('#improve').val(data.improve);
+					} else {
+						$("input:radio").attr("checked", false);
+						$("#bestexp").val("");
+						$('#improve').val('');
+					}
+				});
+			});
+		}
+	});
+
+	function feedback(){
+		var errorMsg = "";
+		var applicableRadioStatus = false;
+		var overallRadioStatus = false;
+		var applicableRating = document.getElementsByName("applicable");
+		$(applicableRating).each(function(){
+			if(this.checked){
+				applicableRadioStatus = true;
+			}
+		});
+		if ($("#source").val() == "") {
+			errorMsg += "<li>Please enter the name of the person providing feedback.</li>";
+		}
+		if (!applicableRadioStatus) {
+			errorMsg += "<li>Please rate the presentation to your daily work.</li>";
+		}
+		var overallRating = document.getElementsByName("overall");
+		$(overallRating).each(function(){
+			if(this.checked){
+				overallRadioStatus = true;
+			}
+		});
+		if (!overallRadioStatus) {
+			errorMsg += "<li>Please rate conference compared to other similar conferences you have attended.</li>";
+		}
+		if (errorMsg=="") {
+			return true;
+		} else {
+			$(".errormsg").html(errorMsg);
+			return false;
+		}
+	}
+	</script>
+	<style type="text/css">
+	#my-box {
+		background: none repeat scroll 0 0 #EDEDEB;
+		border-radius: 6px 6px 6px 6px;
+		box-shadow: 0 1px 5px #999999;
+		margin: 0 auto 15px;
+		min-height: 160px;
+		overflow: auto;
+		padding: 20px;
+		width: 650px;
+	}
+	</style>
+</head>
+<body class="signin" style="overflow: auto;">
+	<jsp:include page="/WEB-INF/views/includes/header.jsp"/>
+	<div align="center" style="width: 100%;">
+		<h2 class="pageheading">Conference Feedback</h2>
+		<div align="center" id='my-box'>
+			<form class="ixf-form form-v1" method="POST" enctype="multipart/form-data" action="${pageContext['request'].contextPath}/course/confeedback" name="f" id="f" onsubmit="return feedback();">
+				<dl>
+					<div class="errormsg"></div>
+				</dl>
+				<dl>
+					<dt><label for="source">Feedback Source:<span class="colorRed">*</span></label></dt>
+					<dd><input name="source" type="text" id="source" size="50" />
+					<input name="sourceId" type="hidden" id="sourceId" /></dd>
+				</dl>
+				<dl>
+					<dt><label for="background">Please specify your background:<span class="colorRed">*</span></label></dt>
+					<dd>
+						<select name="background" id="background" aria-required="true">
+							<option style="width: 20px;" value="Designer">Designer</option>
+							<option style="width: 20px;" value="Developer">Developer</option>
+							<option style="width: 20px;" value="QA">QA</option>
+							<option style="width: 20px;" value="Other">Other (Please Specify)</option>
+						</select>
+						<input type="text" name="job" id="job"/>
+					</dd>
+				</dl>
+				<dl>
+					<dt><label for="distance">Please tell us the approximate distance traveled to attend the conference (in miles)<span class="colorRed">*</span></label></dt>
+					<dd><input type="text" name="distance" id="distance"/></dd>
+				</dl>
+				<dl>
+					<dt><label for="location">Conference Location?<span class="colorRed">*</span></label></dt>
+					<dd>
+						<strong>poor</strong>
+						<input type="radio" name="location" style="width: 20px;" value="1">1</input>
+						<input type="radio" name="location" style="width: 20px;" value="2">2</input>
+						<input type="radio" name="location" style="width: 20px;" value="3">3</input>
+						<input type="radio" name="location" style="width: 20px;" value="4">4</input>
+						<input type="radio" name="location" style="width: 20px;" value="5">5</input>
+						<input type="radio" name="location" style="width: 20px;" value="6">6</input>
+						<input type="radio" name="location" style="width: 20px;" value="7">7</input>
+						<strong>great</strong>
+					</dd>
+				</dl>
+				<dl>
+					<dt><label for="food">Food?<span class="colorRed">*</span></label></dt>
+					<dd>
+						<strong>poor</strong>
+						<input type="radio" name="food" style="width: 20px;" value="1">1</input>
+						<input type="radio" name="food" style="width: 20px;" value="2">2</input>
+						<input type="radio" name="food" style="width: 20px;" value="3">3</input>
+						<input type="radio" name="food" style="width: 20px;" value="4">4</input>
+						<input type="radio" name="food" style="width: 20px;" value="5">5</input>
+						<input type="radio" name="food" style="width: 20px;" value="6">6</input>
+						<input type="radio" name="food" style="width: 20px;" value="7">7</input>
+						<strong>great</strong>
+					</dd>
+				</dl>
+				<dl>
+					<dt><label for="presentationcontent">Content of Presentations?<span class="colorRed">*</span></label></dt>
+					<dd>
+						<strong>poor</strong>
+						<input type="radio" name="presentationcontent" style="width: 20px;" value="1">1</input>
+						<input type="radio" name="presentationcontent" style="width: 20px;" value="2">2</input>
+						<input type="radio" name="presentationcontent" style="width: 20px;" value="3">3</input>
+						<input type="radio" name="presentationcontent" style="width: 20px;" value="4">4</input>
+						<input type="radio" name="presentationcontent" style="width: 20px;" value="5">5</input>
+						<input type="radio" name="presentationcontent" style="width: 20px;" value="6">6</input>
+						<input type="radio" name="presentationcontent" style="width: 20px;" value="7">7</input>
+						<strong>great</strong>
+					</dd>
+				</dl>
+				<dl>
+					<dt><label for="presentationquality">Quality of Presentations?<span class="colorRed">*</span></label></dt>
+					<dd>
+						<strong>poor</strong>
+						<input type="radio" name="presentationquality" style="width: 20px;" value="1">1</input>
+						<input type="radio" name="presentationquality" style="width: 20px;" value="2">2</input>
+						<input type="radio" name="presentationquality" style="width: 20px;" value="3">3</input>
+						<input type="radio" name="presentationquality" style="width: 20px;" value="4">4</input>
+						<input type="radio" name="presentationquality" style="width: 20px;" value="5">5</input>
+						<input type="radio" name="presentationquality" style="width: 20px;" value="6">6</input>
+						<input type="radio" name="presentationquality" style="width: 20px;" value="7">7</input>
+						<strong>great</strong>
+					</dd>
+				</dl>
+				<dl>
+					<dt><label for="presentationlength">Length of Presentations?<span class="colorRed">*</span></label></dt>
+					<dd>
+						<strong>poor</strong>
+						<input type="radio" name="presentationlength" style="width: 20px;" value="1">1</input>
+						<input type="radio" name="presentationlength" style="width: 20px;" value="2">2</input>
+						<input type="radio" name="presentationlength" style="width: 20px;" value="3">3</input>
+						<input type="radio" name="presentationlength" style="width: 20px;" value="4">4</input>
+						<input type="radio" name="presentationlength" style="width: 20px;" value="5">5</input>
+						<input type="radio" name="presentationlength" style="width: 20px;" value="6">6</input>
+						<input type="radio" name="presentationlength" style="width: 20px;" value="7">7</input>
+						<strong>great</strong>
+					</dd>
+				</dl>
+				<dl>
+					<dt><label for="conferencelength">Length of Conference? (2 days plus a keynote)<span class="colorRed">*</span></label></dt>
+					<dd>
+						<strong>poor</strong>
+						<input type="radio" name="conferencelength" style="width: 20px;" value="1">1</input>
+						<input type="radio" name="conferencelength" style="width: 20px;" value="2">2</input>
+						<input type="radio" name="conferencelength" style="width: 20px;" value="3">3</input>
+						<input type="radio" name="conferencelength" style="width: 20px;" value="4">4</input>
+						<input type="radio" name="conferencelength" style="width: 20px;" value="5">5</input>
+						<input type="radio" name="conferencelength" style="width: 20px;" value="6">6</input>
+						<input type="radio" name="conferencelength" style="width: 20px;" value="7">7</input>
+						<strong>great</strong>
+					</dd>
+				</dl>
+				<dl>
+					<dt><label for="schedule">Daily schedule (start, end, breaks, etc.)<span class="colorRed">*</span></label></dt>
+					<dd>
+						<strong>poor</strong>
+						<input type="radio" name="schedule" style="width: 20px;" value="1">1</input>
+						<input type="radio" name="schedule" style="width: 20px;" value="2">2</input>
+						<input type="radio" name="schedule" style="width: 20px;" value="3">3</input>
+						<input type="radio" name="schedule" style="width: 20px;" value="4">4</input>
+						<input type="radio" name="schedule" style="width: 20px;" value="5">5</input>
+						<input type="radio" name="schedule" style="width: 20px;" value="6">6</input>
+						<input type="radio" name="schedule" style="width: 20px;" value="7">7</input>
+						<strong>great</strong>
+					</dd>
+				</dl>
+				<dl>
+					<dt><label for="keynote0">Keynote speaker (Clark Gilbert - Wednesday evening)<span class="colorRed">*</span></label></dt>
+					<dd>
+						<strong>poor</strong>
+						<input type="radio" name="keynote0" style="width: 20px;" value="1">1</input>
+						<input type="radio" name="keynote0" style="width: 20px;" value="2">2</input>
+						<input type="radio" name="keynote0" style="width: 20px;" value="3">3</input>
+						<input type="radio" name="keynote0" style="width: 20px;" value="4">4</input>
+						<input type="radio" name="keynote0" style="width: 20px;" value="5">5</input>
+						<input type="radio" name="keynote0" style="width: 20px;" value="6">6</input>
+						<input type="radio" name="keynote0" style="width: 20px;" value="7">7</input>
+						<strong>great</strong>
+					</dd>
+				</dl>
+				<dl>
+					<dt><label for="keynote1">Keynote speaker (Blaine Maxfield - Thursday morning)<span class="colorRed">*</span></label></dt>
+					<dd>
+						<strong>poor</strong>
+						<input type="radio" name="keynote1" style="width: 20px;" value="1">1</input>
+						<input type="radio" name="keynote1" style="width: 20px;" value="2">2</input>
+						<input type="radio" name="keynote1" style="width: 20px;" value="3">3</input>
+						<input type="radio" name="keynote1" style="width: 20px;" value="4">4</input>
+						<input type="radio" name="keynote1" style="width: 20px;" value="5">5</input>
+						<input type="radio" name="keynote1" style="width: 20px;" value="6">6</input>
+						<input type="radio" name="keynote1" style="width: 20px;" value="7">7</input>
+						<strong>great</strong>
+					</dd>
+				</dl>
+				<dl>
+					<dt><label for="keynote2">Keynote speakers (Michael Carter, John Edwards - Friday morning)<span class="colorRed">*</span></label></dt>
+					<dd>
+						<strong>poor</strong>
+						<input type="radio" name="keynote2" style="width: 20px;" value="1">1</input>
+						<input type="radio" name="keynote2" style="width: 20px;" value="2">2</input>
+						<input type="radio" name="keynote2" style="width: 20px;" value="3">3</input>
+						<input type="radio" name="keynote2" style="width: 20px;" value="4">4</input>
+						<input type="radio" name="keynote2" style="width: 20px;" value="5">5</input>
+						<input type="radio" name="keynote2" style="width: 20px;" value="6">6</input>
+						<input type="radio" name="keynote2" style="width: 20px;" value="7">7</input>
+						<strong>great</strong>
+					</dd>
+				</dl>
+				<dl>
+					<dt><label for="applicable">How applicable was the conference content to what you were looking for?<span class="colorRed">*</span></label></dt>
+					<dd>
+						<strong>poor</strong>
+						<input type="radio" name="applicable" style="width: 20px;" value="1">1</input>
+						<input type="radio" name="applicable" style="width: 20px;" value="2">2</input>
+						<input type="radio" name="applicable" style="width: 20px;" value="3">3</input>
+						<input type="radio" name="applicable" style="width: 20px;" value="4">4</input>
+						<input type="radio" name="applicable" style="width: 20px;" value="5">5</input>
+						<input type="radio" name="applicable" style="width: 20px;" value="6">6</input>
+						<input type="radio" name="applicable" style="width: 20px;" value="7">7</input>
+						<strong>great</strong>
+					</dd>
+				</dl>
+				<dl>
+					<dt><label for="overall">How does this Conference compare to other similar conferences you have attended?<span class="colorRed">*</span></label></dt>
+					<dd>
+						<strong>poor</strong>
+						<input type="radio" name="overall" style="width: 20px;" value="1">1</input>
+						<input type="radio" name="overall" style="width: 20px;" value="2">2</input>
+						<input type="radio" name="overall" style="width: 20px;" value="3">3</input>
+						<input type="radio" name="overall" style="width: 20px;" value="4">4</input>
+						<input type="radio" name="overall" style="width: 20px;" value="5">5</input>
+						<input type="radio" name="overall" style="width: 20px;" value="6">6</input>
+						<input type="radio" name="overall" style="width: 20px;" value="7">7</input>
+						<strong>great</strong>
+					</dd>
+				</dl>
+				<dl>
+					<dt><label for="service">Do you feel you were able to contribute service effectively?<span class="colorRed">*</span></label></dt>
+					<dd>
+						<strong>poor</strong>
+						<input type="radio" name="service" style="width: 20px;" value="1">1</input>
+						<input type="radio" name="service" style="width: 20px;" value="2">2</input>
+						<input type="radio" name="service" style="width: 20px;" value="3">3</input>
+						<input type="radio" name="service" style="width: 20px;" value="4">4</input>
+						<input type="radio" name="service" style="width: 20px;" value="5">5</input>
+						<input type="radio" name="service" style="width: 20px;" value="6">6</input>
+						<input type="radio" name="service" style="width: 20px;" value="7">7</input>
+						<strong>great</strong>
+					</dd>
+				</dl>
+				<dl>
+					<dt><label for="bestexp">What was your <strong>best experience</strong> at this conference?</label></dt>
+					<dd>
+						<textarea id="bestexp" name="bestexp" cols="30" rows="10"></textarea>
+					</dd>
+				</dl>
+				<dl>
+					<dt><label for="improve">What could be <strong>improved</strong> for the next conference?</label></dt>
+					<dd>
+						<textarea id="improve" name="improve" cols="30" rows="10"></textarea>
+					</dd>
+				</dl>
+				<dl>
+					<dt></dt>
+					<dd><input type="submit" width="100px" height="100px" value="Submit" class="ixf-button primary" style="width: 100px;" /></dd>
+				</dl>
+			</form>
+		</div>
+	</div>
+</body>
+</html>

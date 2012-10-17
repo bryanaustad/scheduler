@@ -1,0 +1,260 @@
+*{position:relative}
+
+.calendar_scroll{
+	width: 500px;
+	height: 920px;
+	overflow-x: auto;
+	overflow-y: auto;
+}
+#calendar {
+	width: 480px;
+	height: 900px;
+}
+
+.conf-sched-hdr {
+	color: #666;
+	font: bold 11px/12px arial;
+	height: 32px;
+	vertical-align: baseline;
+	width: 100%;
+}
+
+.conf-sched-time-hdr {
+	float: left;
+	height: 32px;
+	/*width: 9%;*/
+	width:40px;
+	padding-right: 8px;
+}
+
+.conf-sched-day-hdr {
+	float: left;
+	height: 19px;
+	padding-top: 13px;
+	width: 45%;
+}
+
+.conf-sched-time-sec {
+	float: left;
+	/*width: 9%;*/
+	 width:40px;
+}
+
+.conf-sched-time {
+	height: 80px;
+	color: #999;
+	font: 11px/12px arial;
+	padding-right: 7px;
+	text-align: right;
+}
+
+span.conf-sched-time {
+	float: right;
+	padding-right: 0;
+	position: relative;
+	top: -5px;
+}
+
+.conf-sched-day {
+	background: white;
+	border-bottom: 1px solid #c1c1c1;
+	border-left: 1px solid #c1c1c1;
+	border-top: 1px solid #c1c1c1;
+	float: left;
+	width: 45%;
+}
+
+.conf-sched-hour, .conf-sched-qtr {
+	border-right: 1px solid #c1c1c1;
+	position: static;
+	width: 100%; height: 19px;
+	overflow: visible;
+}
+
+.conf-sched-hour {
+	border-bottom: 1px solid #c1c1c1;
+}
+
+.conf-sched-qtr {
+	border-bottom: 1px solid #eee;
+}
+.conf-sched-col {
+	float: left;
+	position: relative;
+}
+
+/* --- COURSE STUFF --- */
+
+.conf-sched-course {
+	border: solid 1px #7185cc;
+	filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true, sizingMethod=scale, src='images/bkg-66p-blue-lt.png');
+	overflow: hidden;
+	z-index: 1;
+	position: relative;
+}
+.conf-sched-course[class] {
+	background-image:url(../images/bkg-66p-blue-lt.png);
+}
+.conf-sched-course .conf-sched-course-detail {
+	color: #475fb3;
+	font: 10px/12px arial;
+	padding: .6em;
+	position: relative;
+}
+.course-title {
+	font: 9px arial;
+	font-weight: bold;
+	overflow:hidden;
+}
+
+.course-authors {
+	font: 9px arial;
+	overflow:hidden;
+}
+
+.course-time {
+	font: 9px arial;
+	overflow:hidden;
+}
+
+.stacked {
+	margin-top: 1px;
+}
+
+.course-action {
+	background-image:url(../images/bkg-66p-blue-med.png);
+	border-left: 1px solid #7d89b3;
+	float: right;
+	height: 100%;
+	width: 16px;
+	z-index: 2;
+}
+.course-action div {
+	width: 15px;
+}
+.course-confirm {
+	background-repeat: no-repeat;
+	background-position: center;
+	cursor: pointer;
+	height: 18px;
+}
+.course-remove {
+	background-image:url(../images/blue-x.png);
+	background-repeat: no-repeat;
+	background-position: center;
+	border-bottom: 1px solid #7d89b3;
+	cursor: pointer;
+	height: 18px;
+}
+.course-zoom {
+	background-image:url(../images/blue-mag.png);
+	background-repeat: no-repeat;
+	background-position: center;
+	border-bottom: 1px solid #7d89b3;
+	cursor: pointer;
+	height: 18px;
+}
+
+/* --- TENTATIVE COURSE STUFF ---*/
+
+.conf-sched-course-tentative {
+	border:dashed 1px #999;
+	filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true, sizingMethod=scale, src='images/bkg-66p-gray-lt.png');
+	overflow: hidden;
+	position: relative;
+	z-index: 10;
+}
+.conf-sched-course-tentative[class] {
+	background-image:url(../images/bkg-66p-gray-lt.png);
+}
+.conf-sched-course-tentative .conf-sched-course-detail {
+	color: #666;
+	font: 10px/12px arial;
+	padding: .6em;
+}
+.conf-sched-course-tentative .course-action {
+	background-image:url(../images/bkg-66p-gray-med.png);
+	border-left: 1px solid #aaa;
+}
+.conf-sched-course-tentative .course-confirm {
+	background-image:url(../images/grayplus.png);
+	height: 18px;
+}
+.conf-sched-course-tentative .course-remove {
+	background-image:url(../images/gray-x.png);
+	border-bottom: 1px solid #aaa;
+	height: 18px;
+}
+.conf-sched-course-tentative .course-zoom {
+	background-image:url(../images/gray-mag.png);
+	border-bottom: 1px solid #aaa;
+	height: 18px;
+}
+
+/* --- TENTATIVE COURSE STUFF ---*/
+
+.conf-sched-course-general {
+	border:solid 1px #993;
+	filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true, sizingMethod=scale, src='images/bkg-75p-yellow.png');
+	overflow: hidden;
+	position: relative;
+	z-index: 10;
+}
+.conf-sched-course-general[class] {
+	background-image:url(../images/bkg-75p-yellow.png);
+}
+.conf-sched-course-general .conf-sched-course-detail {
+	color: #661;
+	font: 10px/12px arial;
+	padding: .6em;
+	postion:relative;
+}
+.conf-sched-course-general .course-action {
+	background-image:url(../images/bkg-66p-gray-med.png);
+	border-left: 1px solid #993;
+}
+.conf-sched-course-general .course-confirm {
+	background-image: none;
+}
+.conf-sched-course-general .course-remove {
+	background-image: none;
+	border-bottom: 1px solid #993;
+}
+.conf-sched-course-general .course-zoom {
+	background-image:url(../images/gray-mag.png);
+	border-bottom: 1px solid #993;
+	height: 18px;
+}
+
+#header { padding: 1em; }
+
+#MySplitter {
+	/* Height is set to match window size in $().ready() below */
+	border: 3px solid #E9E8E8;
+	min-height: 950px;
+}
+#LeftPane {
+	overflow: auto;
+	/* No margin or border allowed */
+
+}
+.RightPane {
+	overflow: auto;
+	width: 600px;
+	display:block;
+	position:absolute;
+	right:0px;
+	top:0px;
+	background-color: #E9E8E8;
+}
+.vsplitbar {
+	width: 6px;
+	background: #CCC url(../images/vgrabber.gif) no-repeat center;
+}
+
+.vsplitbar.active, .vsplitbar:hover {
+	background-color: #CCC;
+	width: 6px;
+	opacity: 0.5;
+	filter: alpha(opacity=50); /* IE */
+}

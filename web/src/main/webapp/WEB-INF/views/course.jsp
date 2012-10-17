@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<%@include file="/WEB-INF/views/includes/init.jsp" %>
+<%
+String id = request.getParameter("id");
+if (id == null)
+	id = "";
+%>
+<html lang="en">
+<head>
+	<title>Edit Course</title>
+	<jsp:include page="/WEB-INF/views/includes/brains.jsp"/>
+	<style type="text/css">
+	#my-box {
+		width:1250px;
+		overflow: visible;
+		text-align: center;
+	}
+	#my-box input {
+		width: auto;
+	}
+	tr {
+		overflow: visible;
+	}
+	dl {
+		display: inline-block;
+		width: 100%;
+		padding-left: 20px;
+		text-align: center;
+	}
+	dt {
+		width: 18%;
+		font-weight:normal;
+		text-align: left;
+	}
+	dd {
+		width : 78%;
+		text-align: left;
+	}
+	.sessionclass {
+		width: 100%;
+		overflow: visible;
+	}
+	.buttontd {
+		text-align:right;
+	}
+	.errormsg {
+		padding-left: 50px;
+	}
+	#desc {
+		background: none repeat scroll 0 0 #FFFFFF;
+		border-color: #B2B2B1 #C4C4C3 #D6D6D5;
+		border-radius: 0.3em 0.3em 0.3em 0.3em;
+		border-style: solid;
+		border-width: 1px;
+		box-shadow: 0 1px 0 #F9F9F8;
+		color: #535353;
+		font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+		font-size: 15px;
+		padding: 3px;
+	}
+	</style>
+	<script type="text/javascript">
+	var options = new Array();
+	$(function() {
+		$.ajaxSetup({
+			// Disable caching of AJAX responses */
+			cache: false
+		});
+		function getGMTString() {
+			var d = new Date();
+			return d.toString().split("GMT")[1];
+		}
+		$('#gmtstring').html(getGMTString());
+		var _data;
+
+		String.prototype.trim = function() {
+			return this.replace(/^\s+|\s+$/g,"");
+		}
+		String.prototype.ltrim = function() {
+			return this.replace(/^\s+/,"");
+		}
+		String.prototype.rtrim = function() {
+			return this.replace(/\s+$/,"");
+		}
+
+		// Session Times
+		var sessioncount = 0;
+		function addSession(session) {
+			var timezone = $("#conferenceGMT").val();
+			var startDate = new Date();
+			var endDate = new Date();
+			if (session != null && session.start != undefined) {
+				startDate = convertGMTtoConferenceTimezone(session.start,timezone);
+			}
+			if (session !=null && session.end != undefined) {
+				endDate = convertGMTtoConferenceTimezone(session.end,timezone);
+			}
+			var gentr = $(document.createElement('tr')).attr('id','tr_'+sessioncount);
+			gentr.after().html("<td><select id='day_"+sessioncount+"' name='day_"+sessioncount+"'>"+options+"</select></td>");
+
+			var start = $(document.createElement('input')).attr("id", 'start_'+sessioncount);
+			start.attr("name","start_"+sessioncount);
+			start.attr("type","text");
+			start.attr("size","10");
+			start.val(formatTime(startDate.toString()));
+			var starttd = $(document.createElement('td'));
+			starttd.append(start);
+			gentr.append(starttd);
+
+			var end = $(document.createElement('input')).attr("id", 'end_'+sessioncount);
+			end.attr("name","end_"+sessioncount);
+			end.attr("type","text");
+			end.attr("size","10");
+			end.val(formatTime(endDate.toString()));
+			var endtd = $(document.createElement('td'));
+			endtd.append(end);
+			gentr.append(endtd);
+
+			var track_len = $(document.createElement('input')).attr("id", 'track_len_'+sessioncount);
+			track_len.attr("name","track_len_"+sessioncount);
+			track_len.attr("type","text");
+			track_len.attr("size","6");
+			track_len.attr("readonly","readonly");
+			var track_lentd = $(document.createElement('td'));
+			track_lentd.append(track_len);
+			gentr.append(track_lentd);
+
+			var room = $(document.createElement('input')).attr("id", 'room_'+sessioncount);
+			room.attr("name","room_"+sessioncount);
+			room.attr("type","text");
+			room.attr("size","20");
+			if (session != null && session.room != undefined) {
+				room.val(session.room);
+			}
+			var roomtd = $(document.createElement('td'));
+			roomtd.append(room);
+			gentr.append(roomtd);
+
+			var registered = $(document.createElement('input')).attr("id", 'registered_'+sessioncount);
+			registered.attr("name","registered_"+sessioncount);
+			registered.attr("type","text");
+			registered.attr("size","4");
+			registered.attr("disabled","disabled");
+			if (session != null && session.registered != undefined) {
+				registered.val(session.registered);
+			}
+			var registeredtd = $(document.createElement('td'));
+			registeredtd.append(registered);
+			gentr.append(registeredtd);
+
+			var tentative = $(document.createElement('input')).attr("id", 'tentative_'+sessioncount);
+			tentative.attr("name","tentative_"+sessioncount);
+			tentative.attr("type","text");
+			tentative.attr("size","4");
+			tentative.attr("disabled","disabled");
+			if (session != null && session.tentative != undefined) {
+				tentative.val(session.tentative);
+			}
+			var tentativetd = $(document.createElement('td'));
+			tentativetd.append(tentative);
+			gentr.append(tentativetd);
+
+			var remove = $(document.createElement('input')).attr("id", 'removeSession_'+sessioncount);
+			remove.attr("name","removeSession_"+sessioncount);
+			remove.attr("class","ixf-button tertiary");
+			remove.attr("type","button");
+			remove.attr("value","Delete Session");
+			var removetd = $(document.createElement('td'));
+			removetd.append(remove);
+			gentr.append(removetd);
+			remove.bind("click",function() {
+				removeSession(gentr);
+			});
+			$('.sessionbody').append(gentr);
+			$('#day_'+sessioncount).val(startDate.getFullYear()+'-'+("0"+(startDate.getMonth()+1)).slice(-2)+"-"+("0"+startDate.getDate()).slice(-2));
+
+			timedifflength(start,end,track_len,true);
+
+			start.bind("blur",function() {
+				timedifflength(start,end,track_len,true);
+			});
+			start.ptTimeSelect({
+				onClose: function(i) {
+					i.blur();
+				}
+			});
+			end.bind("blur",function() {
+				timedifflength(start,end,track_len,false);
+			});
+			end.ptTimeSelect({
+				onClose: function(i) {
+					i.blur();
+				}
+			});
+
+			room.autocomplete({
+				source: function(request, response) {
+					$.getJSON("${pageContext['request'].contextPath}/room/list.json", {
+						term: extractLast(request.term)
+					}, response);
+				},
+				minLength: 2
+			});
+			sessioncount++;
+		}
+
+		function removeSession(cboxgen) {
+			var val=Number(cboxgen.attr('id').replace(/^tr_/,''));
+			for (index=val;index<sessioncount-1;index++) {
+				$("#day_"+index).val($("#day_"+(index+1)).val());
+				$("#start_"+index).val($("#start_"+(index+1)).val());
+				$("#end_"+index).val($("#end_"+(index+1)).val());
+				$("#track_len_"+index).val($("#track_len_"+(index+1)).val());
+				$("#room_"+index).val($("#room_"+(index+1)).val());
+			}
+			sessioncount--;
+			$('#tr_'+sessioncount).remove();
+		}
+
+		$("#addSession").click(function() {
+			 addSession(null);
+		});
+
+		function validateinputbox(fieldname,fieldtext) {
+			if ($.trim($('#'+fieldname).val())=="")
+				return "<li>"+fieldtext+" is required.</li>";
+			return "";
+		}
+
+		function set(valid) {
+			var result = {};
+			for (var i = 0; i < valid.length; i++)
+				result[valid[i]] = true;
+			return result;
+		}
+
+		function split(val) {
+			return val.split(/;\s*/);
+		}
+		function extractLast(term) {
+			return split(term).pop();
+		}
+
+		function getDay(day) {
+			var daysOfWeek = new Array("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday");
+			if ((day >= 0) && (day < 7)) {
+				return daysOfWeek[day];
+			} else {
+				return "";
+			}
+		}
+
+		function formatDay(day) {
+			var date = new Date(day);
+			return getDay(date.getDay());
+		}
+
+		function fill(search) {
+			$.getJSON("${pageContext['request'].contextPath}/course/list.single.json", search, function(data) {
+				_data = data;
+				if (data.id==undefined)
+					return false;
+				$("#name").val(data.name);
+				$("#id").val(data.id);
+				$("#desc").val($.trim(data.desc));
+				$("#url").val($.trim(data.url));
+				$("#email").val($.trim(data.email));
+				$("#accountid").val($.trim(data.accountid));
+				$("#authorlist").val(convertArraytoStringBySemicolon(data.authors));
+				$("#audiencelist").val(convertArraytoStringBySemicolon(data.audience));
+				$("#taglist").val(convertArraytoStringBySemicolon(data.tags));
+				$("#attachment").empty();
+				if (data.filename != undefined) {
+					$("#attachment").append("<a target='_blank' href=\"${pageContext['request'].contextPath}/course/paper/"+htmlEscape(data.filename)+"\">"+htmlEscape(data.filedisplayname)+"</a>");
+				} else {
+					$("#attachment").val("");
+				}
+				if (data.track != undefined) {
+					$("#track").val(data.track);
+				}
+				if (data.general) {
+					$("#general").attr('checked', true);
+				} else {
+					$("#general").attr('checked', false);
+				}
+				if (data.approve_tech) {
+					$("#approve_tech").attr('checked', true);
+				} else {
+					$("#approve_tech").attr('checked', false);
+				}
+				if (data.approve_ip) {
+					$("#approve_ip").attr('checked', true);
+				} else {
+					$("#approve_ip").attr('checked', false);
+				}
+				if (data.approve_cor) {
+					$("#approve_cor").attr('checked', true);
+				} else {
+					$("#approve_cor").attr('checked', false);
+				}
+				$("#registered").val(data.registered);
+				$("#tentative").val(data.tentative);
+				$('.sessionbody').html("");
+				sessioncount = 0;
+				if (data.sessions != undefined){
+					$(data.sessions).each(function() {
+						addSession(this);
+					});
+				}
+			});
+		}
+
+		$("#name").blur(function() {
+			fill({name:$("#name").val().trim()});
+		});
+
+		$("#name").autocomplete({
+			source: function(request, response) {
+				$.getJSON("${pageContext['request'].contextPath}/course/autolist.json",{
+					term: extractLast(request.term)
+				}, response);
+			},
+			minLength: 2
+		});
+
+		$("#authorlist").autocomplete({
+			source: function(request, response) {
+				$.getJSON("${pageContext['request'].contextPath}/author/list.json",{
+					term: extractLast(request.term)
+				}, response);
+			},
+			search: function() {
+				// custom minLength
+				var term = extractLast(this.value);
+				if (term.length < 2) {
+					return false;
+				}
+			},
+			focus: function() {
+				// prevent value inserted on focus
+				return false;
+			},
+			select: function(event, ui) {
+				var terms = split( this.value );
+				// remove the current input
+				terms.pop();
+				// add the selected item
+				terms.push( ui.item.value );
+				// add placeholder to get the semicolon-and-space at the end
+				terms.push("");
+				this.value = terms.join("; ");
+				return false;
+			}
+		});
+
+		$("#authorlist").blur(function() {
+			validateAuthors();
+			firstauthor=$("#authorlist").val().split(/;\s*/)[0].trim();
+			$.getJSON("${pageContext['request'].contextPath}/author/details.json", {name:firstauthor}, function(data) {
+				if (data.name!=undefined) {
+					$('#accountid').val(data.accountid);
+					$("#username").val(data.username);
+					$("#email").val(data.email);
+				}
+			})
+        });
+
+		function validateAuthors(){
+			$(".errormsg").empty();//clear out the errormsg div
+			var errorMsg = "";
+			//check to see if authorlist is empty
+			errorMsg += validateinputbox("authorlist","List of Authors");
+			if(errorMsg != ""){
+				$(".errormsg").html("<ul>" + $.trim(errorMsg) + "</ul>");
+				return;
+			}
+			//validate that all authors are publishers
+			errorMsg += validateAuthorsMsg();
+			if(errorMsg != ""){
+				$(".errormsg").html("<ul>" + $.trim(errorMsg) + "</ul>");
+			}
+		}
+
+		function validateAuthorsMsg(){
+			var authors = $("#authorlist").val().split(/;\s*/);
+			var errorMsg = "";
+			for(var i = 0; i < authors.length; i++){
+				errorMsg += validateAuthor(authors[i]);
+			}
+			return errorMsg;
+		}
+
+		function validateAuthor(author) {
+			var error = "";
+			$.ajax({
+				url: "/conf/author/list.json",
+				dataType: 'json',
+				data: {term: author},
+				async: false,
+				success: function(validAuthor){
+					if(validAuthor.length <= 0){
+						error = "<li>" + author + " is not a valid author.</li>";
+					}
+				}
+			});
+			return error;
+		}
+
+		$("#courseform").submit(function(){
+			$(".errormsg").empty();
+			var errorMsg = "";
+			errorMsg += validateinputbox("name","Name Of Course");
+			errorMsg += validateinputbox("desc","Description Of Course");
+			errorMsg += validateinputbox("authorlist","List of Authors");
+			errorMsg += validateAuthorsMsg();
+			errorMsg += validateinputbox("email","Email of Author");
+			errorMsg += validateinputbox("accountid","AccountId");
+			errorMsg += validateinputbox("audiencelist","Audience");
+			errorMsg += validateinputbox("taglist","Track");
+			errorMsg += validateinputbox("track","Name Of Course");
+			$(".errormsg").html("<ul>" + $.trim(errorMsg) + "</ul>");
+			validateAuthors();
+			if(errorMsg == ""){
+				return true;
+			}
+			else{
+				return false;
+			}
+		});
+
+		$("#taglist").autocomplete({
+			source: function(request, response) {
+				$.getJSON("${pageContext['request'].contextPath}/tag/list.json", {
+					term: extractLast(request.term)
+				}, response);
+			},
+			search: function() {
+				// custom minLength
+				var term = extractLast(this.value);
+				if (term.length < 2) {
+					return false;
+				}
+			},
+			focus: function() {
+				// prevent value inserted on focus
+				return false;
+			},
+			select: function(event, ui) {
+				var terms = split(this.value);
+				// remove the current input
+				terms.pop();
+				// add the selected item
+				terms.push(ui.item.value);
+				// add placeholder to get the semicolon-and-space at the end
+				terms.push("");
+				this.value = terms.join("; ");
+				return false;
+			}
+		});
+
+		function addOption(adddate) {
+			var optn = document.createElement("option");
+			optn.value = adddate.getUTCFullYear()+'-'+("0"+(adddate.getUTCMonth()+1)).slice(-2)+"-"+("0"+adddate.getUTCDate()).slice(-2);
+			optn.text = getDay((adddate.getUTCDay()))+" "+optn.value;
+			options += ("<option value='"+optn.value+"'>"+optn.text+"</option>");
+		}
+
+		$.getJSON("${pageContext['request'].contextPath}/conference/info.json", null, function(data) {
+			var sdate = setGMTDateObject(data.datefrom,"00:00 am");
+			var edate = setGMTDateObject(data.dateto,"00:00 am");
+			$("#conferenceGMT").val(data.timezone);
+			while (sdate<=edate){
+				addOption(sdate);
+				sdate.setDate(sdate.getDate()+1);
+			}
+			if ($("#id").val()!="")
+				fill({id:$("#id").val()});
+			else if ($("#name").val()!="")
+				fill({name:$("#name").val()});
+		});
+
+	});
+	</script>
+</head>
+
+<body style="overflow: auto;">
+	<jsp:include page="/WEB-INF/views/includes/header.jsp"/>
+	<h2 class="pageheading">Edit Course</h2>
+	<div id="my-box">
+		<form method="POST" enctype="multipart/form-data" action="${pageContext['request'].contextPath}/course/crud" name="home" id="courseform">
+			<input type="hidden" name="conferenceGMT" id="conferenceGMT" />
+			<input type='hidden' name="id" id="id" value="<%= id %>" />
+			<div class="errormsg" ></div>
+			<dl>
+				<dt><label for="name">Course:<span class="colorRed">*</span></label></dt>
+				<dd><input type='text' name="name" id="name" size="50" /></dd>
+			</dl>
+			<dl>
+				<dt><label for="desc">Description:<span class="colorRed">*</span></label></dt>
+				<dd><textarea id="desc" name="desc" rows="3" ></textarea></dd>
+			</dl>
+			<dl>
+				<dt><label for="url">URL:</label></dt>
+				<dd><input type='text' name="url" id="url" size="50" /></dd>
+			</dl>
+			<dl>
+				<dt><label for="authorlist">Authors:<span class="colorRed">*</span></label></dt>
+				<dd><input type="text" id="authorlist" name="authorlist" size="50" /></dd>
+			</dl>
+			<dl>
+				<dt><label for="email">Email:<span class="colorRed">*</span></label></dt>
+				<dd><input type='text' name="email" id="email" size="50" readonly="readonly" /></dd>
+			</dl>
+			<dl>
+				<dt><label for="accountid">AccountId:<span class="colorRed">*</span></label></dt>
+				<dd><input type='text' name="accountid" id="accountid" size="50" readonly="readonly" /></dd>
+			</dl>
+			<dl>
+				<dt><label for="audiencelist">Audience:<span class="colorRed">*</span></label></dt>
+				<dd><input type="text" id="audiencelist" name="audiencelist" size="50" /></dd>
+			</dl>
+			<dl>
+				<dt><label for="taglist">Tags:<span class="colorRed">*</span></label></dt>
+				<dd><input type="text" id="taglist" name="taglist" size="50" /></dd>
+			</dl>
+			<dl>
+				<dt><label for="track">Track:<span class="colorRed">*</span></label></dt>
+				<dd><%@ include file="includes/track.jsp" %></dd>
+			</dl>
+			<dl>
+				<dt><label for="attachment">Slide Deck:</label></dt>
+				<dd><span id="attachment" class="attachment"></span></dd>
+			</dl>
+			<dl>
+				<dt><label for="datafile">Add or Replace Slide Deck:</label></dt>
+				<dd><input type="file" width="300px" name="datafile" id="datafile"/></dd>
+			</dl>
+			<hr />
+			<div class="sessionclass">
+				<table class="sessiontable">
+					<caption>Sessions</caption>
+					<thead>
+						<tr>
+							<th>Session Day</th>
+							<th>Start Time</th>
+							<th>End Time</th>
+							<th>Length</th>
+							<th>Room</th>
+							<th>Reg</th>
+							<th>Tent</th>
+							<th><input type="button" name="addSession" value="Add Session" id="addSession" class="ixf-button primary" /></th>
+						</tr>
+					</thead>
+					<tbody class="sessionbody">
+					</tbody>
+				</table>
+			</div>
+			<hr />
+			<dl>
+				<dt><label for="general">General Session:</label></dt>
+				<dd><input type="checkbox" id="general" name="general" /></dd>
+			</dl>
+			<dl>
+				<dt><label for="approve_tech" style="overflow: hidden;">Tech Lead Approved:</label></dt>
+				<dd><input type="checkbox" id="approve_tech" name="approve_tech" /></dd>
+			</dl>
+			<dl>
+				<dt><label for="approve_ip">IP Approved:</label></dt>
+				<dd><input type="checkbox" id="approve_ip" name="approve_ip" /></dd>
+			</dl>
+			<dl>
+				<dt><label for="approve_cor">Correlation Approved:</label></dt>
+				<dd><input type="checkbox" id="approve_cor" name="approve_cor" /></dd>
+			</dl>
+			<dl>
+				<dt>&nbsp;</dt>
+				<dd style="padding-left: 50px;width: 400px">
+					<input type="submit" id="save" value="Save Course" class="ixf-button primary" />
+					<a href="${pageContext['request'].contextPath}/course/delete/<%= id %>" class="ixf-button tertiary">Delete Course</a>
+				</dd>
+			</dl>
+			<dl>
+				<dt><label for="registered">Registered:</label></dt>
+				<dd><input type='text' name="registered" id="registered" size="50" disabled="disabled" /></dd>
+			</dl>
+			<dl>
+				<dt><label for="tentative">Tentative:</label></dt>
+				<dd><input type='text' name="tentative" id="tentative" size="50" disabled="disabled" /></dd>
+			</dl>
+		</form>
+	</div>
+	<!-- <div class="church-logo">The Church of Jesus Christ of Latter-day Saints</div> -->
+</body>
+</html>

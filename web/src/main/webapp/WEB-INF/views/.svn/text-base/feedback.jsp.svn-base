@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<%@include file="/WEB-INF/views/includes/init.jsp" %>
+<html lang="en">
+	<head>
+		<title>Feedback</title>
+		<jsp:include page="/WEB-INF/views/includes/brains.jsp"/>
+		<link rel="stylesheet" type="text/css" media="print" href="${pageContext['request'].contextPath}/styles/print.css" />
+		<link rel="shortcut icon" type="image/ico" href="/favicon.ico" />
+		<script type="text/javascript" charset="utf-8">
+			$(function(){
+				$.ajaxSetup({
+					// Disable caching of AJAX responses */
+					cache: false
+				});
+				//Only display the View Feedback button if the user is an admin
+				$("#viewfeedback").hide();
+				$.getJSON("${pageContext['request'].contextPath}/roles/get", null, function(data) {
+					if (data.admin) {
+						$("#viewfeedback").show();
+					}
+				});
+			});
+		</script>
+	</head>
+	<body class="signin" >
+		<jsp:include page="/WEB-INF/views/includes/header.jsp"/>
+		<h2 class="pageheading">Feedback</h2>
+		<br/><br/><br/>
+		<center><a href="${pageContext['request'].contextPath}/coursefeedback" class="ixf-button primary">Course Feedback</a><a href="${pageContext['request'].contextPath}/conferencefeedback" class="ixf-button primary">Conference Feedback</a></center>
+		<div id="viewfeedback">
+			<center><a href="${pageContext['request'].contextPath}/course/viewfeedback" class="ixf-button primary">View Feedback</a>
+		</div>
+		<div class="church-logo">The Church of Jesus Christ of Latter-day Saints</div>
+	</body>
+</html>

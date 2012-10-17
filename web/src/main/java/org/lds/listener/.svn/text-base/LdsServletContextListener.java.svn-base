@@ -1,0 +1,49 @@
+package org.lds.listener;
+
+import javax.servlet.ServletContext;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
+
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
+import com.mongodb.Mongo;
+
+public class LdsServletContextListener implements ServletContextListener {
+	public void contextInitialized(ServletContextEvent event) {
+		ServletContext sc = event.getServletContext();
+		Mongo mongo = null;
+		try {
+			mongo = new Mongo("localhost", 27017);
+			if (mongo != null) {
+				sc.setAttribute("mongo", mongo);
+			}
+			DB db = mongo.getDB("mydb");
+			if (db != null) {
+				sc.setAttribute("mongodb", db);
+			}
+			DBCollection coll = db.getCollection("conference");
+			DBCursor cursor =  coll.find();
+			if (cursor.hasNext()) {
+				// TODO: find next occurring conference to handle multiples
+				DBObject dbObject = (DBObject)cursor.next();
+				sc.setAttribute("conferencename", dbObject.get("name"));
+			}
+		} catch(Exception e) {
+			System.out.println(e);
+		}
+	}
+	public void contextDestroyed(ServletContextEvent event) {
+		ServletContext sc = event.getServletContext();
+		try {
+			Mongo mongo=(Mongo)sc.getAttribute("mongo");
+			if (mongo!=null)
+				mongo.close();
+			sc.removeAttribute("mongodb");
+			sc.removeAttribute("mongo");
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+	}
+}

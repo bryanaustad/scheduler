@@ -1,0 +1,65 @@
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/sort/!svn/ver/871/branches/scheduler/web/src/main/java/org/lds/view
+END
+DashBoardController.java
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn/sort/!svn/ver/853/branches/scheduler/web/src/main/java/org/lds/view/DashBoardController.java
+END
+RegisterController.java
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/sort/!svn/ver/859/branches/scheduler/web/src/main/java/org/lds/view/RegisterController.java
+END
+ConferenceController.java
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svn/sort/!svn/ver/871/branches/scheduler/web/src/main/java/org/lds/view/ConferenceController.java
+END
+PaperController.java
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/sort/!svn/ver/857/branches/scheduler/web/src/main/java/org/lds/view/PaperController.java
+END
+RoomController.java
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/sort/!svn/ver/854/branches/scheduler/web/src/main/java/org/lds/view/RoomController.java
+END
+CourseController.java
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn/sort/!svn/ver/868/branches/scheduler/web/src/main/java/org/lds/view/CourseController.java
+END
+AuthorController.java
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn/sort/!svn/ver/854/branches/scheduler/web/src/main/java/org/lds/view/AuthorController.java
+END
+TagController.java
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svn/sort/!svn/ver/691/branches/scheduler/web/src/main/java/org/lds/view/TagController.java
+END
+AttendeeController.java
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/sort/!svn/ver/845/branches/scheduler/web/src/main/java/org/lds/view/AttendeeController.java
+END
+RoleController.java
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/sort/!svn/ver/747/branches/scheduler/web/src/main/java/org/lds/view/RoleController.java
+END

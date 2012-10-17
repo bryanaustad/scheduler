@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ===================================================================== -->
+<!-- JPA Persistence Configuration File                                    -->
+<!-- ===================================================================== -->
+<persistence xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
+	version="2.0">
+	<persistence-unit name="org.lds.scheduler" transaction-type="RESOURCE_LOCAL">
+		<class>org.lds.model.Course</class>
+		<class>org.lds.model.Author</class>
+		<class>org.lds.model.Attendee</class>
+		<class>org.lds.model.Room</class>
+		<class>org.lds.model.Tag</class>
+		<class>org.lds.model.Conference</class>
+		<class>org.lds.model.AttendeeCourse</class>
+		<class>org.lds.model.Example</class>
+		<!-- You must list entities here.  Integration tests won't automatically find them -->
+		<exclude-unlisted-classes/>
+	</persistence-unit>
+</persistence>

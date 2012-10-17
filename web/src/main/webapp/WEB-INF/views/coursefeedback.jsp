@@ -1,0 +1,269 @@
+<html>
+<%@include file="/WEB-INF/views/includes/init.jsp" %>
+<html lang="en">
+	<title>Course Feedback</title>
+	<jsp:include page="/WEB-INF/views/includes/brains.jsp"/>
+	<script type="text/javascript">
+	$(function() {
+		var _data;
+
+		String.prototype.trim = function() {
+			return this.replace(/^\s+|\s+$/g,"");
+		}
+		String.prototype.ltrim = function() {
+			return this.replace(/^\s+/,"");
+		}
+		String.prototype.rtrim = function() {
+			return this.replace(/\s+$/,"");
+		}
+
+		function set (valid) {
+			var result = {};
+			for (var i = 0; i < valid.length; i++)
+			  result[valid[i]] = true;
+			return result;
+		}
+
+		function split(val) {
+			return val.split(/;\s*/);
+		}
+		function extractLast(term) {
+			return split(term).pop();
+		}
+
+		//If the user is not an admin, ensure the feedback source field is read-only
+		$("#source").attr("readonly", "readonly");
+		//	The above line ensures the box is read-only even if the following JSON request fails
+		$.getJSON("${pageContext['request'].contextPath}/roles/get", null, function(data) {
+			$("#source").val(data.name);
+			$("#sourceId").val(data.accountid);
+			if (data.admin) {
+				$("#source").attr("readonly", "");
+			}
+			//$("#source").trigger("blur");
+		});
+
+		$("#source").blur(function() {
+			if ($("#source").val() != "") {
+				$.getJSON("${pageContext['request'].contextPath}/author/details.json", {name:$("#source").val().trim()}, function(data) {
+					if (data.name!=undefined) {
+						$('#sourceId').val(data.accountid);
+					} else {
+						$("#sourceId").val("");
+					}
+				});
+			}
+		});
+
+		$("#source").autocomplete({
+			source: function(request, response) {
+				$.getJSON("${pageContext['request'].contextPath}/attendee/autolist.json",{
+					term: extractLast(request.term)
+				}, response);
+			},
+			minLength: 2
+		});
+
+		$("#name").blur(function() {
+			var v = $("#name").val().trim();
+			$.getJSON("${pageContext['request'].contextPath}/course/list.single.json",{name:v}, function(data) {
+				_data = data;
+				if (data.id != undefined) {
+					$("#courseid").val(data.id);
+					$("#authorlist").val(convertArraytoStringBySemicolon(data.authors));
+				}
+				fill({name:$("#source").val().trim()});
+			});
+		});
+
+		$("#name").autocomplete({
+			source: function(request, response) {
+				$.getJSON("${pageContext['request'].contextPath}/course/approvedautolist.json", {
+					term: extractLast(request.term)
+				}, response);
+			},
+			minLength: 2
+		});
+
+		$("#authorlist").autocomplete({
+			source: function(request, response) {
+				$.getJSON("${pageContext['request'].contextPath}/author/list.json", {
+					term: extractLast(request.term)
+				}, response);
+			},
+			search: function() {
+				// custom minLength
+				var term = extractLast(this.value);
+				if (term.length < 2) {
+					return false;
+				}
+			},
+			focus: function() {
+				// prevent value inserted on focus
+				return false;
+			},
+			select: function(event, ui) {
+				var terms = split( this.value );
+				// remove the current input
+				terms.pop();
+				// add the selected item
+				terms.push( ui.item.value );
+				// add placeholder to get the semicolon-and-space at the end
+				terms.push("");
+				this.value = terms.join("; ");
+				return false;
+			}
+		});
+
+		function fill(search) {
+			//Get the feedback source's account ID
+			$.getJSON("${pageContext['request'].contextPath}/author/details.json", search, function(data) {
+				if (data.name!=undefined) {
+					$('#sourceId').val(data.accountid);
+				}
+			});
+			//Get everything else -- only if a specific course is specified
+			$.getJSON("${pageContext['request'].contextPath}/course/getfeedback/course.json", {sourceId:$("#sourceId").val().trim(), courseId:$("#courseid").val().trim()}, function(data) {
+				if(data.sourceId!=undefined) {
+					$("input[name=content-quality]")[data.contentRating - 1].checked = true;
+					$("input[name=presenter-quality]")[data.presenterRating - 1].checked = true;
+					$("#like").val(data.like);
+					$('#suggest').val(data.suggest);
+				} else {
+					$("input:radio").attr("checked", false);
+					$("#like").val("");
+					$('#suggest').val('');
+				}
+			});
+		}
+	});
+
+	function validateinputbox(fieldname,fieldext){
+		if($.trim($('#'+fieldname).val())=="")
+			return " <li>"+fieldext+" is required.</li><br/>";
+		return "";
+	}
+	function feedback(){
+		var errorMsg = "";
+		var effectivePresentedRadioStatus = false;
+		var contendPresentedRadioStatus = false;
+		errorMsg +=	validateinputbox("name","Name of Presentation");
+
+		if($("#courseid").val()=="" && $("#name").val()!=""){
+			var errorMsg = "<li> Please enter a valid Name of Presentation. </li><br/>";
+		}
+		errorMsg +=	validateinputbox("authorlist","Presenters");
+		var contendPresentedRating = document.getElementsByName("content-quality");
+		$(contendPresentedRating).each(function(){
+				if(this.checked){
+					contendPresentedRadioStatus = true;
+				}
+			});
+			if(!contendPresentedRadioStatus){
+				 errorMsg += "<li> Please rate the quality of the content presented. </li> <br />";
+			}
+		var effectivePresentedRating = document.getElementsByName("presenter-quality");
+		$(effectivePresentedRating).each(function(){
+				if(this.checked){
+					effectivePresentedRadioStatus = true;
+				}
+			});
+		if(!effectivePresentedRadioStatus){
+			 errorMsg += "<li> Please rate the presenter's ability. </li> <br />";
+		}
+
+		$(".errormsg").html(errorMsg);
+		if (errorMsg=="") {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	</script>
+	<style type="text/css">
+	#my-box {
+		background: none repeat scroll 0 0 #EDEDEB;
+		border-radius: 6px 6px 6px 6px;
+		box-shadow: 0 1px 5px #999999;
+		margin: 0 auto 15px;
+		min-height: 160px;
+		overflow: auto;
+		padding: 20px;
+		width: 650px;
+	}
+	</style>
+</head>
+<body class="signin" onload="document.f.name.focus();" style="overflow: auto;">
+	<jsp:include page="/WEB-INF/views/includes/header.jsp"/>
+	<div align="center" style="width: 100%;">
+		<h2 class="pageheading">Course Feedback</h2>
+		<div align="center" id='my-box'>
+			<form class="ixf-form form-v1"  method="POST" enctype="multipart/form-data" action="${pageContext['request'].contextPath}/course/feedback" name="f" onsubmit="return feedback();">
+				<input name="courseid" id="courseid" value="" size="50" type="hidden" />
+				<dl>
+					<div class="errormsg" ></div>
+				</dl>
+				<dl>
+					<dt><label for="source">Feedback Source:<span class="colorRed">*</span></label></dt>
+					<dd><input name="source" type="text" id="source" size="50" /></dd>
+					<dd><input name="sourceId" type="text" id="sourceId" size="50" readonly="readonly" /></dd>
+				</dl>
+				<dl>
+					<dt><label for="name">Name of Presentation:<span class="colorRed">*</span></label></dt>
+					<dd><input name="name" type="text" id="name" size="50" /></dd>
+				</dl>
+				<dl>
+					<dt><label for="authorlist">Presenters:(Semi-colon delimit if multiple "ie. Joe Slow ; John Poe")<span class="colorRed">*</span></label></dt>
+					<dd><input name="authorlist" type="text" id="authorlist" size="50" /></dd>
+				</dl>
+				<dl>
+					<dt><label for="content-quality">How would your rate the quality of the <strong>content</strong> presented?<span class="colorRed">*</span></label></dt>
+					<dd>
+						<strong>poor</strong>
+						<input type="radio" name="content-quality" value="1"  style="width: 20px;">1</input>
+						<input type="radio" name="content-quality" value="2"  style="width: 20px;">2</input>
+						<input type="radio" name="content-quality" value="3"  style="width: 20px;">3</input>
+						<input type="radio" name="content-quality" value="4"  style="width: 20px;">4</input>
+						<input type="radio" name="content-quality" value="5"  style="width: 20px;">5</input>
+						<input type="radio" name="content-quality" value="6"  style="width: 20px;">6</input>
+						<input type="radio" name="content-quality" value="7"  style="width: 20px;">7</input>
+						<strong>great</strong>
+					</dd>
+				</dl>
+				<dl>
+					<dt><label for="presenter-quality">How would you rate the presenter's ability to <strong>effectively present</strong> the information?<span class="colorRed">*</span></label></dt>
+					<dd>
+						<strong>poor</strong>
+						<input type="radio" name="presenter-quality" value="1" style="width: 20px;">1</input>
+						<input type="radio" name="presenter-quality" value="2" style="width: 20px;">2</input>
+						<input type="radio" name="presenter-quality" value="3" style="width: 20px;">3</input>
+						<input type="radio" name="presenter-quality" value="4" style="width: 20px;">4</input>
+						<input type="radio" name="presenter-quality" value="5" style="width: 20px;">5</input>
+						<input type="radio" name="presenter-quality" value="6" style="width: 20px;">6</input>
+						<input type="radio" name="presenter-quality" value="7" style="width: 20px;">7</input>
+						<strong>great</strong>
+					</dd>
+				</dl>
+				<dl>
+					<dt><label for="like">What did you <strong>most appreciate</strong> about this presentation?</label></dt>
+					<dd>
+						<textarea id="like" name="like" cols="30" rows="10"></textarea>
+					</dd>
+				</dl>
+				<dl>
+					<dt><label for="suggest">If you had just <strong>one suggestion for this presenter</strong>, what would it be?</label></dt>
+					<dd>
+						<textarea id="suggest" name="suggest" cols="30" rows="10"></textarea>
+					</dd>
+				</dl>
+				<dl>
+					<dt >&nbsp;</dt>
+					<!-- <dd style="padding-left: 100px"><a href="javascript:document.f.submit()" class="ixf-button primary">Submit</a></dd> -->
+					<dd><input type="submit" width="100px" height="100px" value="Submit" class="ixf-button primary" style="width: 100px;" /></dd>
+				</dl>
+			</form>
+		</div>
+		<!-- <div class="church-logo">The Church of Jesus Christ of Latter-day Saints</div> -->
+	</div>
+</body>
+</html>

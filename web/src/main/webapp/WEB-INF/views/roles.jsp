@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<%@include file="/WEB-INF/views/includes/init.jsp" %>
+<%
+String accountid = request.getParameter("accountid");
+if (accountid == null)
+	accountid = "";
+%>
+<html lang="en">
+<head>
+	<title>Roles</title>
+	<jsp:include page="/WEB-INF/views/includes/brains.jsp"/>
+	<script type="text/javascript">
+	$(function() {
+		$('.roleconfig').hide();
+		function split(val) {
+			return val.split(/;\s*/);
+		}
+		function extractLast(term) {
+			return split(term).pop();
+		}
+		function fill(search) {
+			//console.debug("%o", search);
+			$.getJSON("${pageContext['request'].contextPath}/author/details.json", search, function(data) {
+				if (data.name!=undefined) {
+					$('.roleconfig').show();
+					$('#name').val(data.name);
+					$('#accountid').val(data.accountID);
+					$('#admin').attr('checked', false);
+					$('#approver').attr('checked', false);
+					$('#presenter').attr('checked', false);
+					$('#registrant').attr('checked', false);
+					if (data.submitpaperdisable != undefined) {
+						$('#submitpaperdisable').attr('checked', data.submitpaperdisable);
+					} else {
+						$('#submitpaperdisable').attr('checked',false);
+					}
+					if (''+data.admin == 'true') {
+						$('#admin').attr('checked', true);
+						$('#approver').attr('checked', true);
+						$('#presenter').attr('checked', true);
+					} else if (''+data.approver == 'true') {
+						$('#approver').attr('checked', true);
+						$('#presenter').attr('checked', true);
+					} else if (''+data.presenter == 'true') {
+						$('#presenter').attr('checked', true);
+					}
+					$('#registrant').attr('checked', true);
+					$("#flag").val(true);
+					$("#dietneeds").val(data.dietneeds);
+					$("#username").val(data.username);
+					$("#address").val(data.address);
+					$("#city").val(data.city);
+					$("#province").val(data.province);
+					$("#country").val(data.country);
+					$("#postal").val(data.postal);
+					$("#phone").val(data.phone);
+					$("#gender").val(data.gender);
+					$("#shirtsize").val(data.shirtsize);
+					$("#org").val(data.organization);
+					$("#email").val(data.email);
+				} else {
+					$('.roleconfig').hide();
+					$("#flag").val(false);
+				}
+			});
+		}
+		$("#name").autocomplete({
+			source: function(request, response) {
+				$.getJSON("${pageContext['request'].contextPath}/attendee/autolist.json", {
+					term: extractLast(request.term)
+				}, response);
+			},
+			minLength: 3
+		});
+		$("#name").keypress(function() {
+			$('.roleconfig').hide();
+		});
+		$("#name").mousedown(function() {
+			$('.roleconfig').hide();
+		});
+		$("#name").blur(function() {
+			fill({name:$("#name").val().trim()});
+		});
+
+		// fill in if possible
+		if ($("#accountid").val()!="") {
+			fill({accountid:$("#accountid").val()});
+		} else {
+			document.f.name.focus();
+		}
+	});
+	function admintoggle() {
+		//$('#admin').attr('checked', true);
+		$('#approver').attr('checked', true);
+		$('#presenter').attr('checked', true);
+		$('#registrant').attr('checked', true);
+	}
+	function approvertoggle() {
+		$('#admin').attr('checked', false);
+		//$('#approver').attr('checked', false);
+		$('#presenter').attr('checked', true);
+		$('#registrant').attr('checked', true);
+	}
+	function presentertoggle() {
+		$('#admin').attr('checked', false);
+		$('#approver').attr('checked', false);
+		//$('#presenter').attr('checked', false);
+		$('#registrant').attr('checked', true);
+	}
+	function registranttoggle() {
+		$('#admin').attr('checked', false);
+		$('#approver').attr('checked', false);
+		$('#presenter').attr('checked', false);
+		//$('#registrant').attr('checked', false);
+	}
+	function validate() {
+		$('#registrant').attr('checked','checked')
+		return true;
+	}
+	</script>
+</head>
+<body class="signin">
+	<jsp:include page="/WEB-INF/views/includes/header.jsp"/>
+	<h2 class="pageheading">User Role Configuration</h2>
+	<div id="wide-box">
+		<form class="ixf-form form-v1" method="POST" action="${pageContext['request'].contextPath}/roles/roleassign.json" name="f" onsubmit="return validate();">
+			<input type='hidden' name="flag" id="flag" />
+			<dl>
+				<dt><label for="name">Enter the User's Name:</label></dt>
+				<dd><input type='text' name="name" id="name" size="50" /></dd>
+			</dl>
+			<dl>
+				<dt><label for="accountid">AccountID</label></dt>
+				<dd><input type="text" name="accountid" id="accountid" readonly="readonly" value="<%= accountid %>" /></dd>
+			</dl>
+			<div id="roleconfig" class="roleconfig">
+			<dl>
+				<dt><label for = "admin">Privilege</label></dt>
+				<dt>
+					<input type="checkbox" id="admin" name="admin" onclick="admintoggle()" /><label for="admin">Admin</label><br/>
+					<input type="checkbox" id="approver" name="approver" onclick="approvertoggle()" /><label for="approver">Approver</label><br/>
+					<input type="checkbox" id="presenter" name="presenter" onclick="presentertoggle()" /><label for="presenter">Presenter</label><br/>
+					<input type="checkbox" id="registrant" name="registrant" onclick="registranttoggle()" /><label for="registrant">Registrant</label>
+				</dt>
+			</dl>
+			<dl class="nopad" style="text-align: center;">
+				<dt>&nbsp;</dt>
+				<dd>
+					<input type="submit" id="save" value="Save" class="ixf-button primary" style="width: 100px;" />
+					<a href = "${pageContext['request'].contextPath}/attendee/unregisterUser?accountid=<%= accountid %>" class = "ixf-button tertiary">Unregister this attendee</a>
+				</dd>
+			</dl>
+			<p>Fields below this line are not yet editable</p>
+			<hr />
+			<dl>
+				<dt><label for="submitpaperdisable">Restrictions</label></dt>
+				<dt><input type="checkbox" id="submitpaperdisable" name="submitpaperdisable" /><label>Submit Paper Disable</label></dt>
+			</dl>
+			<dl>
+				<dt><label for="username">Username<span class="colorRed">*</span></label></dt>
+				<dd><input type="text" name="username" id="username" readonly="readonly"/></dd>
+			</dl>
+			<dl>
+				<dt><label for="address">Address<span class="colorRed">*</span></label></dt>
+				<dd><input type="text" name="address" id="address"/></dd>
+			</dl>
+			<dl>
+				<dt><label for="city">City<span class="colorRed">*</span></label></dt>
+				<dd><input type="text" name="city" id="city"/></dd>
+			</dl>
+			<dl>
+				<dt><label for="province">State/Province<span class="colorRed">*</span></label></dt>
+				<dd><input type="text" name="province" id="province"/></dd>
+			</dl>
+			<dl>
+				<dt><label for="country">Country<span class="colorRed">*</span></label></dt>
+				<dd><%@ include file="includes/country.jsp" %></dd>
+			</dl>
+			<dl>
+				<dt><label for="postal">ZIP/Postal Code<span class="colorRed">*</span></label></dt>
+				<dd><input type="text" name="postal" id="postal"/></dd>
+			</dl>
+			<dl>
+				<dt><label for="phone">Phone<span class="colorRed">*</span></label></dt>
+				<dd><input type="text" name="phone" id="phone"/></dd>
+			</dl>
+			<dl>
+				<dt><label for="gender">Gender<span class="colorRed">*</span></label></dt>
+				<dd><select name="gender" id="gender" aria-required="true" onKeyPress="return submitenter(this,event)">
+					<option value="M">Male</option>
+					<option value="F">Female</option>
+				</select> </dd>
+			</dl>
+			<dl>
+				<dt><label for="shirtsize">Shirt Size<span class="colorRed">*</span></label></dt>
+				<dd><select name="shirtsize" id="shirtsize" aria-required="true" onKeyPress="return submitenter(this,event)">
+					<option value="None">None</option>
+					<option value="XS">XS</option>
+					<option value="S">S</option>
+					<option value="M">M</option>
+					<option value="L">L</option>
+					<option value="XL">XL</option>
+					<option value="XXL">XXL</option>
+					<option value="XXXL">XXXL</option>
+				</select></dd>
+			</dl>
+			<dl>
+				<dt><label for="email">Email<span class="colorRed">*</span></label></dt>
+				<dd><input type="text" name="email" id="email" /></dd>
+			</dl>
+			<dl>
+				<dt><label for="org">Organization<span class="colorRed">*</span></label></dt>
+				<dd><select name="org" id="org" aria-required="true" onKeyPress="return submitenter(this,event)">
+					<option value="Other">Other</option>
+					<option value="ICS">ICS</option>
+					<option value="Family History">Family History</option>
+					<option value="BYU">BYU</option>
+					<option value="BYU-Idaho">BYU-Idaho</option>
+					<option value="BYU-Hawaii">BYU-Hawaii</option>
+					<option value="LDS Business College">LDS Business College</option>
+					<option value="Utah State University">Utah State University</option>
+					<option value="University of Utah">University of Utah</option>
+					<option value="Weber State University">Weber State University</option>
+					<option value="Vendor">Vendor</option>
+				</select></dd>
+			</dl>
+			</div>
+		</form>
+	</div>
+	<!-- <div class="church-logo">The Church of Jesus Christ of Latter-day Saints</div> -->
+</body>
+</html>

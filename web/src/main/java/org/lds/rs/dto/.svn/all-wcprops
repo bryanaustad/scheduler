@@ -1,0 +1,59 @@
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/sort/!svn/ver/853/branches/scheduler/web/src/main/java/org/lds/rs/dto
+END
+OrganizationWiseAttendeeDTO.java
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/sort/!svn/ver/736/branches/scheduler/web/src/main/java/org/lds/rs/dto/OrganizationWiseAttendeeDTO.java
+END
+ListObject.java
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/sort/!svn/ver/329/branches/scheduler/web/src/main/java/org/lds/rs/dto/ListObject.java
+END
+ScheduleCourseDTO.java
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn/sort/!svn/ver/718/branches/scheduler/web/src/main/java/org/lds/rs/dto/ScheduleCourseDTO.java
+END
+CourseCountDTO.java
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn/sort/!svn/ver/722/branches/scheduler/web/src/main/java/org/lds/rs/dto/CourseCountDTO.java
+END
+CountryWiseAttendeeDTO.java
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/sort/!svn/ver/329/branches/scheduler/web/src/main/java/org/lds/rs/dto/CountryWiseAttendeeDTO.java
+END
+CourseDateBean.java
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn/sort/!svn/ver/818/branches/scheduler/web/src/main/java/org/lds/rs/dto/CourseDateBean.java
+END
+SortSession.java
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svn/sort/!svn/ver/853/branches/scheduler/web/src/main/java/org/lds/rs/dto/SortSession.java
+END
+AutoCompleteDTO.java
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/sort/!svn/ver/661/branches/scheduler/web/src/main/java/org/lds/rs/dto/AutoCompleteDTO.java
+END
+ProfileDTO.java
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/sort/!svn/ver/841/branches/scheduler/web/src/main/java/org/lds/rs/dto/ProfileDTO.java
+END
